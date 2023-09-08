@@ -1,0 +1,51 @@
+﻿@* @using Microsoft.AspNetCore.Identity
+@using DangKyPhongThucHanhCNTT.IdentityAreas
+
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager *@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký phòng thực hành</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <link rel="stylesheet" href="~/css/site.css">
+</head>
+<body>
+    <div class="bg-primary bg-info">
+        <div class="bg">
+            <header>
+                @* @{
+                    if (SignInManager.IsSignedIn(this.User))
+                    {
+                        <div id="login">
+                            <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index">Xin chào @UserManager.GetUserName(this.User). (<a class="text-decoration-none" asp-area="Identity" asp-page="/Account/Logout">Thoát</a>)</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div id="login">
+                            Bạn chưa <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">đăng nhập</a>.
+                        </div>
+                    }
+                } *@
+                <img src="~/Banner.png" alt="" class="w-100 rounded-top" height="100">
+                <p class="text-center text-bg-primary fs-6 mt-1 rounded-bottom">
+                    <label for="">Ứng dụng đăng ký phòng thực hành trường CNTT & TT</label>
+                </p>
+            </header>
+            <main class="container">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
