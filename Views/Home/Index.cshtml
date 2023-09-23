@@ -1,170 +1,54 @@
-﻿@* @using DangKyPhongThucHanhTruongCNTT.Models
- *@
+﻿@model IEnumerable<MyWebAPI.Data.ViewModels.HocPhan>
+
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div id="Course" class="position-fixed d-none d-lg-block">
-    <select name="selectCourse" id="selectCourse" onchange="ChangeCourse()" class="card">
-        @* @{
-        foreach (var c in db.Courses)
-        {
-        <option value="@c.Id">@c.Name</option>
-        }
-        } *@
+<h1>Index</h1>
 
-        <option value="">Lập trình .NET</option>
-        <option value="">Xây dựng ứng dụng ASP.NET</option>
-        <option value="">Xây dựng ứng dụng ASP.NET Core Entity Framework</option>
-    </select>
-
-    <div id="list" class="card align-items-center mt-2">
-        @* @foreach (var items in Model.PracticeSesions)
-        {
-        <div draggable="true" class="item">
-        <input type="hidden" name="NumberOfSessionId" value="@items.NumberOfSessionId">
-        <input name="CourseId" type="text" class="form-control shadow-sm" value="Buổi @items.NumberOfSessionId @items.CourseId" disabled>
-        </div>
-        } *@
-        <div draggable="true" class="item">
-            <input type="hidden" name="NumberOfSessionId" value="">
-            <input name="CourseId" type="text" class="form-control shadow-sm" value="Buổi 1 TN207" disabled>
-        </div>
-        <div draggable="true" class="item">
-            <input type="hidden" name="NumberOfSessionId" value="">
-            <input name="CourseId" type="text" class="form-control shadow-sm" value="Buổi 2 TN207" disabled>
-        </div>
-        <div draggable="true" class="item">
-            <input type="hidden" name="NumberOfSessionId" value="">
-            <input name="CourseId" type="text" class="form-control shadow-sm" value="Buổi 3 TN207" disabled>
-        </div>
-        <div draggable="true" class="item">
-            <input type="hidden" name="NumberOfSessionId" value="">
-            <input name="CourseId" type="text" class="form-control shadow-sm" value="Buổi 4 TN207" disabled>
-        </div>
-        <div draggable="true" class="item">
-            <input type="hidden" name="NumberOfSessionId" value="">
-            <input name="CourseId" type="text" class="form-control shadow-sm" value="Buổi 5 TN207" disabled>
-        </div>
-        <div draggable="true" class="item">
-            <input type="hidden" name="NumberOfSessionId" value="">
-            <input name="CourseId" type="text" class="form-control shadow-sm" value="Buổi 6 TN207" disabled>
-        </div>
-    </div>
-</div>
-<div class="row justify-content-lg-end">
-    <div id="schedule" class="col-lg-9 table-responsive">
-        @{
-            //var week = db.Weeks.Select(e => e.Id);
-            var week = 20;
-            //var semester = db.Semesters.Single(e => e.currentSemster == true);
-            //string[] ddMMyyyy = semester.SemesterStartDate.Split('/');
-            //DateOnly date = new DateOnly(int.Parse(ddMMyyyy[2]), int.Parse(ddMMyyyy[1]), int.Parse(ddMMyyyy[0]));
-
-            DateOnly date = new DateOnly(2023, 08, 07);
-            var toDay = date.AddDays(0);
-            //foreach (var w in week)
-            for (int i = 1; i <= week; i++)
-            {
-                @using (Html.BeginForm("CreateOrUpateSchedule", "Home", FormMethod.Post))
-                {
-                //<input type="hidden" value="@semester.currentSemster" name="SemesterId">
-                    <table class="table table-bordered border-default align-middle text-center mt-2">
-                        <thead>
-                            <tr>
-                                <th scope="col" rowspan="2">
-                                    <input type="button" class="btn btn-secondary mb-2" name="WeekId" value="Tuần @i">
-                                </th>
-                                <th scope="col">T2</th>
-                                <th scope="col">T3</th>
-                                <th scope="col">T4</th>
-                                <th scope="col">T5</th>
-                                <th scope="col">T6</th>
-                                <th scope="col">T7</th>
-                                <th scope="col">CN</th>
-                            </tr>
-
-                            <tr class="date">
-                                <th>
-                                    <input type="hidden" value="@toDay.ToString(" dd /MM/yyyy")" name="Day">
-                                    @{
-                                        Write(toDay.ToString("dd/MM/yyyy"));
-                                        toDay = toDay.AddDays(1);
-                                    }
-                                </th>
-                                <th>
-                                    <input type="hidden" value="@toDay.ToString(" dd /MM/yyyy")" name="Day">
-                                    @{
-                                        Write(toDay.ToString("dd/MM/yyyy"));
-                                        toDay = toDay.AddDays(1);
-                                    }
-                                </th>
-                                <th>
-                                    <input type="hidden" value="@toDay.ToString(" dd /MM/yyyy")" name="Day">
-                                    @{
-                                        Write(toDay.ToString("dd/MM/yyyy"));
-                                        toDay = toDay.AddDays(1);
-                                    }
-                                </th>
-                                <th>
-                                    <input type="hidden" value="@toDay.ToString(" dd /MM/yyyy")" name="Day">
-                                    @{
-                                        Write(toDay.ToString("dd/MM/yyyy"));
-                                        toDay = toDay.AddDays(1);
-                                    }
-                                </th>
-                                <th>
-                                    <input type="hidden" value="@toDay.ToString(" dd /MM/yyyy")" name="Day">
-                                    @{
-                                        Write(toDay.ToString("dd/MM/yyyy"));
-                                        toDay = toDay.AddDays(1);
-                                    }
-                                </th>
-                                <th>
-                                    <input type="hidden" value="@toDay.ToString(" dd /MM/yyyy")" name="Day">
-                                    @{
-                                        Write(toDay.ToString("dd/MM/yyyy"));
-                                        toDay = toDay.AddDays(1);
-                                    }
-                                </th>
-                                <th>
-                                    <input type="hidden" value="@toDay.ToString(" dd /MM/yyyy")" name="Day">
-                                    @{
-                                        Write(toDay.ToString("dd/MM/yyyy"));
-                                        toDay = toDay.AddDays(1);
-                                    }
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <th scope="row">Sáng</th>
-                                <td class="box"></td>
-                                <td class="box"></td>
-                                <td class="box"></td>
-                                <td class="box"></td>
-                                <td class="box"></td>
-                                <td class="box"></td>
-                                <td class="box"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Chiều</th>
-                                <td class="box"></td>
-                                <td class="box"></td>
-                                <td class="box"></td>
-                                <td class="box"></td>
-                                <td class="box"></td>
-                                <td class="box"></td>
-                                <td class="box"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                }
-
-            }
-        }
-
-    </div>
-</div>
-
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.MaHP)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TenHocPhan)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SoTinChi)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SoTietThucHanh)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaHP)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TenHocPhan)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SoTinChi)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SoTietThucHanh)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

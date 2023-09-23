@@ -1,0 +1,46 @@
+﻿@model MyWebAPI.Data.ViewModels.LoginModel
+
+<div class="position-relative overflow-hidden radial-gradient d-flex align-items-center justify-content-center">
+    <div class="d-flex align-items-center justify-content-center w-100 py-4">
+        <div class="row justify-content-center w-100">
+            <div class="col-md-6 col-xxl-3">
+                <div class="card mb-0">
+                    <div class="card-body">
+                        <p class="text-center fs-5">Đăng nhập</p>
+                        <form asp-action="SignIn" method="POST">
+                            <div class="mb-3">
+                                <label asp-for="MSCB" class="form-label">MSCB</label>
+                                <input type="text" asp-for="MSCB" value="@ViewBag.MSCB" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                                <span asp-validation-for="MSCB" class="text-danger"></span>
+                            </div>
+                            <div class="mb-4">
+                                <label asp-for="Password" class="form-label">Mật khẩu</label>
+                                <input type="password" asp-for="Password" class="form-control" id="exampleInputPassword1">
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                                <span>
+                                    @Html.ValidationMessage("ErrorPassword", new { @class = "text-danger" })
+                                </span>
+                            </div>                            
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input primary" type="checkbox" value="" id="flexCheckChecked" checked>
+                                    <label class="form-check-label text-dark" for="flexCheckChecked">
+                                        Ghi nhớ mật khẩu
+                                    </label>
+                                </div>
+                                <a class="text-primary fw-bold" href="/Home/Index">Quên mật khẩu?</a>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2">Đăng nhập</button>
+                            <div class="d-flex align-items-center justify-content-center">
+                                Logo
+                                <button class="btn btn-secondary">Đăng nhập với Google</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

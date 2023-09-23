@@ -1,54 +1,53 @@
-using DangKyPhongThucHanhCNTT.Data;
-using DangKyPhongThucHanhCNTT.IdentityAreas;
-using DangKyPhongThucHanhCNTT.Services;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<MyDbContext>(
-    options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppDbContext>();
-builder.Services.AddDbContext<AppDbContext>(
-    options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddRazorPages();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/SignIn";
+        options.AccessDeniedPath = "/Account/Forbidden/";
+    });
 
-builder.Services.AddIdentity<AppUser, IdentityRole>()
-    .AddEntityFrameworkStores<AppDbContext>()
-    .AddDefaultTokenProviders();
+//builder.Services.Configure<IdentityOptions>(options =>
+//{
+//    options.Password.RequireDigit = true;
+//    options.Password.RequiredLength = 5;
+//    options.Password.RequireNonAlphanumeric = false;
+//    options.Password.RequireUppercase = false;
+//    options.Password.RequireLowercase = false;
 
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    options.Password.RequireDigit = true;
-    options.Password.RequiredLength = 5;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequireLowercase = false;
+//    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+//    options.Lockout.MaxFailedAccessAttempts = 5;
+//    options.Lockout.AllowedForNewUsers = true;
 
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-    options.Lockout.MaxFailedAccessAttempts = 5;
-    options.Lockout.AllowedForNewUsers = true;
+//    options.User.RequireUniqueEmail = true;
 
-    options.User.RequireUniqueEmail = true;
+//    options.SignIn.RequireConfirmedEmail = true;
+//    options.SignIn.RequireConfirmedPhoneNumber = false;
+//});
 
-    options.SignIn.RequireConfirmedEmail = true;
-    options.SignIn.RequireConfirmedPhoneNumber = false;
-});
+//builder.Services.ConfigureApplicationCookie(options => {
+//    // options.Cookie.HttpOnly = true;  
+//    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+//    options.LoginPath = $"/login/";
+//    options.LogoutPath = $"/logout/";
+//    options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
+//});
 
-builder.Services.AddOptions();
-builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
-builder.Services.AddSingleton<IEmailSender, SendMailService>();
+//builder.Services.AddOptions();
+//builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+//builder.Services.AddSingleton<IEmailSender, SendMailService>();
 
 //builder.Services.AddAuthentication()
 //    .AddGoogle(googleOptions =>
 //    {
 //        IConfigurationSection ggAuthSection = builder.Configuration.GetSection("Authentication:Google");
-//        googleOptions.ClientId = ggAuthSection["ClientId"];
-//        googleOptions.ClientSecret = ggAuthSection["ClientSecret"];
+//        googleOptions.ClientId = ggAuthSection["ClientId"]!;
+//        googleOptions.ClientSecret = ggAuthSection["ClientSecret"]!;
 //        googleOptions.CallbackPath = "/login-with-Google";
 //    });
 

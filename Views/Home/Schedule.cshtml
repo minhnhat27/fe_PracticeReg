@@ -1,0 +1,158 @@
+﻿@* @using DangKyPhongThucHanhTruongCNTT.Models
+ *@
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="Course" class="col-lg-2 position-fixed d-none d-lg-block">
+    <div id="list" class="card align-items-center mt-2">
+        @* @foreach (var items in Model.PracticeSesions)
+        {
+        <div draggable="true" class="item">
+        <input type="hidden" name="NumberOfSessionId" value="@items.NumberOfSessionId">
+        <input name="CourseId" type="text" class="form-control shadow-sm" value="Buổi @items.NumberOfSessionId @items.CourseId" disabled>
+        </div>
+        } *@
+        <div draggable="true" class="item">
+            <input type="hidden" name="NumberOfSessionId" value="">
+            <input name="CourseId" type="text" class="form-control shadow-sm" value="Buổi 1 TN207" disabled>
+        </div>
+        <div draggable="true" class="item">
+            <input type="hidden" name="NumberOfSessionId" value="">
+            <input name="CourseId" type="text" class="form-control shadow-sm" value="Buổi 2 TN207" disabled>
+        </div>
+        <div draggable="true" class="item">
+            <input type="hidden" name="NumberOfSessionId" value="">
+            <input name="CourseId" type="text" class="form-control shadow-sm" value="Buổi 3 TN207" disabled>
+        </div>
+        <div draggable="true" class="item">
+            <input type="hidden" name="NumberOfSessionId" value="">
+            <input name="CourseId" type="text" class="form-control shadow-sm" value="Buổi 4 TN207" disabled>
+        </div>
+        <div draggable="true" class="item">
+            <input type="hidden" name="NumberOfSessionId" value="">
+            <input name="CourseId" type="text" class="form-control shadow-sm" value="Buổi 5 TN207" disabled>
+        </div>
+        <div draggable="true" class="item">
+            <input type="hidden" name="NumberOfSessionId" value="">
+            <input name="CourseId" type="text" class="form-control shadow-sm" value="Buổi 6 TN207" disabled>
+        </div>
+    </div>
+</div>
+<div class="row justify-content-lg-end">
+    <div id="schedule" class="col-lg-9 table-responsive">
+        @{
+            //var week = db.Weeks.Select(e => e.Id);
+            var week = 20;
+            //var semester = db.Semesters.Single(e => e.currentSemster == true);
+            //string[] ddMMyyyy = semester.SemesterStartDate.Split('/');
+            //DateOnly date = new DateOnly(int.Parse(ddMMyyyy[2]), int.Parse(ddMMyyyy[1]), int.Parse(ddMMyyyy[0]));
+
+            DateOnly date = new DateOnly(2023, 08, 07);
+            var toDay = date.AddDays(0);
+            //foreach (var w in week)
+            for (int i = 1; i <= week; i++)
+            {
+                @using (Html.BeginForm("CreateOrUpateSchedule", "Home", FormMethod.Post))
+                {
+                    //<input type="hidden" value="@semester.currentSemster" name="SemesterId">
+                    <table class="align-middle table table-bordered border-default text-center mt-2">
+                        <thead>
+                            <tr>
+                                <th scope="col" rowspan="2">
+                                    <label for="" class="text-danger">Tuần @i</label>
+                                    <input type="button" hidden class="btn btn-secondary mb-2" name="WeekId" value="Tuần @i">
+                                </th>
+                                <th class="py-2" scope="col">T2</th>
+                                <th class="py-2" scope="col">T3</th>
+                                <th class="py-2" scope="col">T4</th>
+                                <th class="py-2" scope="col">T5</th>
+                                <th class="py-2" scope="col">T6</th>
+                                <th class="py-2" scope="col">T7</th>
+                                <th class="py-2" scope="col">CN</th>
+                            </tr>
+
+                            <tr class="date">
+                                <th>
+                                    <input type="hidden" value="@toDay.ToString(" dd /MM/yyyy")" name="Day">
+                                    @{
+                                        Write(toDay.ToString("dd/MM/yyyy"));
+                                        toDay = toDay.AddDays(1);
+                                    }
+                                </th>
+                                <th>
+                                    <input type="hidden" value="@toDay.ToString(" dd /MM/yyyy")" name="Day">
+                                    @{
+                                        Write(toDay.ToString("dd/MM/yyyy"));
+                                        toDay = toDay.AddDays(1);
+                                    }
+                                </th>
+                                <th>
+                                    <input type="hidden" value="@toDay.ToString(" dd /MM/yyyy")" name="Day">
+                                    @{
+                                        Write(toDay.ToString("dd/MM/yyyy"));
+                                        toDay = toDay.AddDays(1);
+                                    }
+                                </th>
+                                <th>
+                                    <input type="hidden" value="@toDay.ToString(" dd /MM/yyyy")" name="Day">
+                                    @{
+                                        Write(toDay.ToString("dd/MM/yyyy"));
+                                        toDay = toDay.AddDays(1);
+                                    }
+                                </th>
+                                <th>
+                                    <input type="hidden" value="@toDay.ToString(" dd /MM/yyyy")" name="Day">
+                                    @{
+                                        Write(toDay.ToString("dd/MM/yyyy"));
+                                        toDay = toDay.AddDays(1);
+                                    }
+                                </th>
+                                <th>
+                                    <input type="hidden" value="@toDay.ToString(" dd /MM/yyyy")" name="Day">
+                                    @{
+                                        Write(toDay.ToString("dd/MM/yyyy"));
+                                        toDay = toDay.AddDays(1);
+                                    }
+                                </th>
+                                <th>
+                                    <input type="hidden" value="@toDay.ToString(" dd /MM/yyyy")" name="Day">
+                                    @{
+                                        Write(toDay.ToString("dd/MM/yyyy"));
+                                        toDay = toDay.AddDays(1);
+                                    }
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">Sáng</th>
+                                <td class="box"></td>
+                                <td class="box"></td>
+                                <td class="box"></td>
+                                <td class="box"></td>
+                                <td class="box"></td>
+                                <td class="box"></td>
+                                <td class="box"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Chiều</th>
+                                <td class="box"></td>
+                                <td class="box"></td>
+                                <td class="box"></td>
+                                <td class="box"></td>
+                                <td class="box"></td>
+                                <td class="box"></td>
+                                <td class="box"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                }
+
+            }
+        }
+
+    </div>
+</div>
+

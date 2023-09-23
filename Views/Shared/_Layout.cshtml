@@ -1,51 +1,224 @@
-﻿@* @using Microsoft.AspNetCore.Identity
-@using DangKyPhongThucHanhCNTT.IdentityAreas
+﻿@using Microsoft.AspNetCore.Identity
+@* 
+@inject UserManager<GiangVien> _userManager;
+@inject SignInManager<GiangVien> _signinManager; *@
 
-@inject SignInManager<AppUser> SignInManager
-@inject UserManager<AppUser> UserManager *@
-
-<!DOCTYPE html>
-<html lang="vi">
+<!doctype html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng ký phòng thực hành</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ứng dụng đăng ký phòng thực hành trường CNTT & TT</title>
+    <link rel="shortcut icon" type="image/png" href="~/favicon.ico" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
-    <link rel="stylesheet" href="~/css/site.css">
+    <link rel="stylesheet" href="~/css/styles.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-    <div class="bg-primary bg-info">
-        <div class="bg">
-            <header>
-                @* @{
-                    if (SignInManager.IsSignedIn(this.User))
-                    {
-                        <div id="login">
-                            <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index">Xin chào @UserManager.GetUserName(this.User). (<a class="text-decoration-none" asp-area="Identity" asp-page="/Account/Logout">Thoát</a>)</a>
-                        </div>
-                    }
-                    else
-                    {
-                        <div id="login">
-                            Bạn chưa <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">đăng nhập</a>.
-                        </div>
-                    }
-                } *@
-                <img src="~/Banner.png" alt="" class="w-100 rounded-top" height="100">
-                <p class="text-center text-bg-primary fs-6 mt-1 rounded-bottom">
-                    <label for="">Ứng dụng đăng ký phòng thực hành trường CNTT & TT</label>
-                </p>
+    <!--  Body Wrapper -->
+    <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+         data-sidebar-position="fixed" data-header-position="fixed">
+        <!-- Sidebar Start -->
+        <aside class="left-sidebar">
+            <!-- Sidebar scroll-->
+            <div>
+                <div class="d-flex align-items-end justify-content-end">
+                    @* <a href="./index.html" class="text-nowrap logo-img">
+                        <img src="~/images/logo.png" width="100" alt="" />
+                    </a> *@
+                    <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+                        <i class="bi bi-x-circle-fill fs-6"></i>
+                    </div>
+                </div>
+                <!-- Sidebar navigation-->
+                <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+                    <ul id="sidebarnav">
+                        <li class="nav-small-cap">
+                            <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                            <span class="hide-menu">Home</span>
+                        </li>
+                        <li class="sidebar-item index-item">
+                            <a class="sidebar-link" href="/Home/Index" aria-expanded="false">
+                                <span>
+                                    <i class="bi bi-grid-1x2-fill"></i>
+                                </span>
+                                <span class="hide-menu">Trang chủ</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-small-cap">
+                            <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                            <span class="hide-menu">Chức năng</span>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="Home/N" aria-expanded="false">
+                                <span>
+                                    <i class="bi bi-pencil-fill"></i>
+                                </span>
+                                <span class="hide-menu">Nhập môn học giảng dạy</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="/Home/Schedule" aria-expanded="false">
+                                <span>
+                                    <i class="bi bi-plus-circle-fill"></i>
+                                </span>
+                                <span class="hide-menu">Đăng ký phòng thực hành</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="/Shedules/View" aria-expanded="false">
+                                <span>
+                                    <i class="bi bi-calendar-check-fill"></i>
+                                </span>
+                                <span class="hide-menu">Xem lịch thực hành cá nhân</span>
+                            </a>
+                        </li>
+                        
+                        @{
+                            if (!User.Identity.IsAuthenticated)
+                            {
+                                <li class="nav-small-cap">
+                                    <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                                    <span class="hide-menu">AUTH</span>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link" href="/Account/SignIn" aria-expanded="false">
+                                        <span>
+                                            <i class="bi bi-arrow-left-square-fill"></i>
+                                        </span>
+                                        <span class="hide-menu">Đăng nhập</span>
+                                    </a>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </nav>
+                <!-- End Sidebar navigation -->
+            </div>
+            <!-- End Sidebar scroll-->
+        </aside>
+        <!--  Sidebar End -->
+        <!--  Main wrapper -->
+        <div class="body-wrapper">
+            <!--  Header Start -->
+            <header class="app-header">
+                <nav class="navbar navbar-expand-lg navbar-light">
+                    <ul class="navbar-nav">
+                        <li class="nav-item d-block d-xl-none">
+                            <a class="nav-link sidebartoggler nav-icon-hover" id="headerCollapse" href="javascript:void(0)">
+                                <i class="ti ti-menu-2"></i>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
+                        <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+                            <li class="nav-item">
+                                <a class="nav-link nav-icon-hover" href="javascript:void(0)">
+                                    <i class="bi bi-bell-fill"></i>
+                                    <div class="notification bg-primary rounded-circle"></div>
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown">                               
+                                @{
+                                    if (User.Identity.IsAuthenticated)
+                                    {
+                                        <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <img src="~/images/user.jpg" alt="" width="35" height="35" class="rounded-circle">
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+                                            <div class="message-body">
+                                                <a href="/Identity/Account/Manage/Index" class="d-flex align-items-center gap-2 dropdown-item">
+                                                    <i class="ti ti-user fs-6"></i>
+                                                    <p class="mb-0 fs-3">Hồ sơ của tôi</p>
+                                                </a>
+                                                <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                                                    <i class="ti ti-mail fs-6"></i>
+                                                    <p class="mb-0 fs-3">Tài khoản của tôi</p>
+                                                </a>
+                                                <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                                                    <i class="ti ti-list-check fs-6"></i>
+                                                    <p class="mb-0 fs-3">My Task</p>
+                                                </a>
+                                                <a data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-outline-primary mx-3 mt-2 d-block">
+                                                    Đăng xuất
+                                                </a>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <a class="nav-link nav-icon-hover" href="/Account/SignIn">
+                                            <img src="~/images/user.jpg" alt="" width="35" height="35" class="rounded-circle">
+                                        </a>
+                                    }
+                                }
+
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
             </header>
-            <main class="container">
+            <!--  Header End -->
+            <!-- Modal Logout -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Đăng xuất</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Bạn có chắc chắn muốn đăng xuất?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            <form action="/Account/Logout">
+                                <button type="submit" class="btn btn-primary">Xác nhận</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid">
                 @RenderBody()
-            </main>
+            </div>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <script src="~/js/app.min.js"></script>
+    <script src="~/js/site.js"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @* *** Active Dropdowns *** *@
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>
+
+@* @{
+    if (SignInManager.IsSignedIn(this.User))
+    {
+        <div id="login">
+            <a id="manage" class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(this.User)!</a>
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Logout" title="Lougout">Logout</a>
+        </div>
+    }
+    else
+    {
+        <div id="login">
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login" title="Manage">Login</a>
+        </div>
+    }
+} *@
