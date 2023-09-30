@@ -10,7 +10,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Ứng dụng đăng ký phòng thực hành trường CNTT & TT</title>
     <link rel="shortcut icon" type="image/png" href="~/favicon.ico" />
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    
+
+    @* leaflet *@
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <link rel="stylesheet" href="~/css/styles.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
@@ -77,10 +87,10 @@
                                 </span>
                                 <span class="hide-menu">Xem lịch thực hành cá nhân</span>
                             </a>
-                        </li>
+                        </li>                   
                         
                         @{
-                            if (!User.Identity.IsAuthenticated)
+                            if (!User.Identity!.IsAuthenticated)
                             {
                                 <li class="nav-small-cap">
                                     <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
@@ -115,6 +125,7 @@
                             </a>
                         </li>
                     </ul>
+                    <div id="error" class="m-1" role="alert"></div>
                     <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
                         <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
                             <li class="nav-item">
@@ -123,41 +134,42 @@
                                     <div class="notification bg-primary rounded-circle"></div>
                                 </a>
                             </li>
-                            <li class="nav-item dropdown">                               
-                                @{
-                                    if (User.Identity.IsAuthenticated)
-                                    {
-                                        <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <img src="~/images/user.jpg" alt="" width="35" height="35" class="rounded-circle">
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
-                                            <div class="message-body">
-                                                <a href="/Identity/Account/Manage/Index" class="d-flex align-items-center gap-2 dropdown-item">
-                                                    <i class="ti ti-user fs-6"></i>
-                                                    <p class="mb-0 fs-3">Hồ sơ của tôi</p>
-                                                </a>
-                                                <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-                                                    <i class="ti ti-mail fs-6"></i>
-                                                    <p class="mb-0 fs-3">Tài khoản của tôi</p>
-                                                </a>
-                                                <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-                                                    <i class="ti ti-list-check fs-6"></i>
-                                                    <p class="mb-0 fs-3">My Task</p>
-                                                </a>
-                                                <a data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-outline-primary mx-3 mt-2 d-block">
-                                                    Đăng xuất
-                                                </a>
-                                            </div>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <img src="~/css/images/user.jpg" alt="" width="35" height="35" class="rounded-circle">
+                                </a>
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+                                        <div class="message-body">
+                                            <a href="/Identity/Account/Manage/Index" class="d-flex align-items-center gap-2 dropdown-item">
+                                                <i class="ti ti-user fs-6"></i>
+                                                <p class="mb-0 fs-3">Hồ sơ của tôi</p>
+                                            </a>
+                                            <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                                                <i class="ti ti-mail fs-6"></i>
+                                                <p class="mb-0 fs-3">Tài khoản của tôi</p>
+                                            </a>
+                                            <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                                                <i class="ti ti-list-check fs-6"></i>
+                                                <p class="mb-0 fs-3">My Task</p>
+                                            </a>
+                                            <a data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-outline-primary mx-3 mt-2 d-block">
+                                                Đăng xuất
+                                            </a>
                                         </div>
-                                    }
-                                    else
-                                    {
-                                        <a class="nav-link nav-icon-hover" href="/Account/SignIn">
-                                            <img src="~/images/user.jpg" alt="" width="35" height="35" class="rounded-circle">
-                                        </a>
-                                    }
+                                    </div>
                                 }
-
+                                else
+                                {
+                                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+                                        <div class="message-body">
+                                            <a href="/Account/SignIn" class="btn btn-outline-primary mx-3 mt-2 d-block">
+                                                Đăng nhập
+                                            </a>
+                                        </div>
+                                    </div>
+                                }
                             </li>
                         </ul>
                     </div>
@@ -190,11 +202,8 @@
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+</body>
     <script src="~/js/app.min.js"></script>
-    <script src="~/js/site.js"></script>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @* *** Active Dropdowns *** *@
@@ -203,22 +212,4 @@
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
-</body>
-
 </html>
-
-@* @{
-    if (SignInManager.IsSignedIn(this.User))
-    {
-        <div id="login">
-            <a id="manage" class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(this.User)!</a>
-            <a class="nav-link" asp-area="Identity" asp-page="/Account/Logout" title="Lougout">Logout</a>
-        </div>
-    }
-    else
-    {
-        <div id="login">
-            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login" title="Manage">Login</a>
-        </div>
-    }
-} *@

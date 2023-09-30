@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 using MyWebAPI.Data.ViewModels;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
@@ -7,8 +6,8 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Logging;
+using Newtonsoft.Json;
 
 namespace DangKyPhongThucHanhCNTTApi.Controllers
 {
@@ -65,7 +64,7 @@ namespace DangKyPhongThucHanhCNTTApi.Controllers
             }
             var result = await _client.PostAsJsonAsync(baseAddress + "/User/SignIn", loginRequest);
             var content = await result.Content.ReadAsStringAsync();
-            var loginResp = JsonSerializer.Deserialize<ApiResponse>(content);
+            var loginResp = JsonConvert.DeserializeObject<ApiResponse>(content);
 
             if (!result.IsSuccessStatusCode)
             {
@@ -79,7 +78,7 @@ namespace DangKyPhongThucHanhCNTTApi.Controllers
 
             var authProperties = new AuthenticationProperties
             {
-                ExpiresUtc = DateTime.UtcNow.AddHours(8),
+                ExpiresUtc = DateTime.UtcNow.AddDays(1),
                 IsPersistent = false,
             };
 
@@ -89,7 +88,7 @@ namespace DangKyPhongThucHanhCNTTApi.Controllers
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
                 Path = "/",
-                HttpOnly = true,
+                //HttpOnly = true,
                 IsEssential = true,
                 Expires = DateTime.Now.AddDays(1)
             };
