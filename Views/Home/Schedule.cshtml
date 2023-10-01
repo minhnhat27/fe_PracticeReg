@@ -6,6 +6,7 @@
 }
 
 <div id="Course" class="col-lg-2 position-fixed d-none d-lg-block">
+    @Html.ValidationMessage("Error")
     <div id="list" class="card align-items-center mt-2">
         @foreach (var items in Model.giangDays)
         {
@@ -52,15 +53,16 @@
                             @{
                                 var wDay = oDay.AddDays(i * 7);
                                 toDay = wDay;
-                            }
-                            @for(int j=1; j<=7; j++)
-                            {
-                                <th>
-                                @{
-                                    Write(toDay.ToString("dd/MM/yyyy"));
-                                    toDay = toDay.AddDays(1);
+
+                                for (int j = 1; j <= 7; j++)
+                                {
+                                    <th>
+                                        @{
+                                            Write(toDay.ToString("dd/MM/yyyy"));
+                                            toDay = toDay.AddDays(1);
+                                        }
+                                    </th>
                                 }
-                                </th>
                             }
                         </tr>
                     </thead>
@@ -72,22 +74,44 @@
                             <th scope="row">Sáng</th>
                             @for (int j = 1; j <= 7; j++)
                             {
-                                <td class="box" data-tuan="@(i + 1)" data-ngay="@toDay" data-buoi="Morning">
-                                    @foreach (var lichs in Model.lichThucHanhs)
-                                    {
-                                        if (lichs.ngaythuchanh.Equals(toDay) && lichs.buoi == "Morning" && lichs.onSchedule)
+                                if (Model.ngaynghis.Contains(toDay))
+                                {
+                                    <td class="box dayoff bg-dark-subtle" data-tuan="@(i + 1)" data-ngay="@toDay" data-buoi="Morning">
+                                        @foreach (var lichs in Model.lichThucHanhs)
                                         {
-                                            <div draggable="true" class="item">
-                                                <div type="text" class="form-control shadow-sm" data-sttbuoi="@lichs.sttbuoithuchanh" data-manhom="@lichs.manhomhp">
-                                                    Buổi @lichs.sttbuoithuchanh @lichs.manhomhp
+                                            if (lichs.ngaythuchanh.Equals(toDay) && lichs.buoi == "Morning" && lichs.onSchedule)
+                                            {
+                                                <div draggable="true" class="item">
+                                                    <div type="text" class="form-control shadow-sm" data-sttbuoi="@lichs.sttbuoithuchanh" data-manhom="@lichs.manhomhp">
+                                                        Buổi @lichs.sttbuoithuchanh @lichs.manhomhp
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            }
                                         }
-                                    }
-                                    @{
-                                        toDay = toDay.AddDays(1);
-                                    }
-                                </td>
+                                        @{
+                                            toDay = toDay.AddDays(1);
+                                        }
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td class="box" data-tuan="@(i + 1)" data-ngay="@toDay" data-buoi="Morning">
+                                        @foreach (var lichs in Model.lichThucHanhs)
+                                        {
+                                            if (lichs.ngaythuchanh.Equals(toDay) && lichs.buoi == "Morning" && lichs.onSchedule)
+                                            {
+                                                <div draggable="true" class="item">
+                                                    <div type="text" class="form-control shadow-sm" data-sttbuoi="@lichs.sttbuoithuchanh" data-manhom="@lichs.manhomhp">
+                                                        Buổi @lichs.sttbuoithuchanh @lichs.manhomhp
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                        @{
+                                            toDay = toDay.AddDays(1);
+                                        }
+                                    </td>
+                                }
                             }
                         </tr>
                         <tr>
@@ -97,21 +121,44 @@
                             <th scope="row">Chiều</th>
                             @for (int j = 1; j <= 7; j++)
                             {
-                                <td class="box" data-tuan="@(i + 1)" data-ngay="@toDay" data-buoi="Afternoon">
-                                    @foreach (var lichs in Model.lichThucHanhs){
-                                        if (lichs.ngaythuchanh.Equals(toDay) && lichs.buoi == "Afternoon" && lichs.onSchedule)
+                                if (Model.ngaynghis.Contains(toDay))
+                                {
+                                    <td class="box dayoff bg-dark-subtle" data-tuan="@(i + 1)" data-ngay="@toDay" data-buoi="Afternoon">
+                                        @foreach (var lichs in Model.lichThucHanhs)
                                         {
-                                            <div draggable="true" class="item">
-                                                <div type="text" class="form-control shadow-sm" data-sttbuoi="@lichs.sttbuoithuchanh" data-manhom="@lichs.manhomhp">
-                                                    Buổi @lichs.sttbuoithuchanh @lichs.manhomhp
+                                            if (lichs.ngaythuchanh.Equals(toDay) && lichs.buoi == "Afternoon" && lichs.onSchedule)
+                                            {
+                                                <div draggable="true" class="item">
+                                                    <div type="text" class="form-control shadow-sm" data-sttbuoi="@lichs.sttbuoithuchanh" data-manhom="@lichs.manhomhp">
+                                                        Buổi @lichs.sttbuoithuchanh @lichs.manhomhp
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            }
                                         }
-                                    }
-                                    @{
-                                        toDay = toDay.AddDays(1);
-                                    }
-                                </td>
+                                        @{
+                                            toDay = toDay.AddDays(1);
+                                        }
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td class="box" data-tuan="@(i + 1)" data-ngay="@toDay" data-buoi="Afternoon">
+                                        @foreach (var lichs in Model.lichThucHanhs)
+                                        {
+                                            if (lichs.ngaythuchanh.Equals(toDay) && lichs.buoi == "Afternoon" && lichs.onSchedule)
+                                            {
+                                                <div draggable="true" class="item">
+                                                    <div type="text" class="form-control shadow-sm" data-sttbuoi="@lichs.sttbuoithuchanh" data-manhom="@lichs.manhomhp">
+                                                        Buổi @lichs.sttbuoithuchanh @lichs.manhomhp
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                        @{
+                                            toDay = toDay.AddDays(1);
+                                        }
+                                    </td>
+                                }
                             }
                         </tr>
                     </tbody>

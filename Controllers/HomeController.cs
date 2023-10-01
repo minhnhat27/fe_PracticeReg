@@ -41,7 +41,7 @@ namespace DangKyPhongThucHanhCNTTApi.Controllers
 
             if (list.giangDays.IsNullOrEmpty())
             {
-                ModelState.AddModelError(string.Empty, "Giảng viên chưa nhập học phần giảng dạy!");
+                ModelState.AddModelError("Error", "Giảng viên chưa nhập học phần giảng dạy!");
             }
             return View(list);
         }
@@ -76,29 +76,13 @@ namespace DangKyPhongThucHanhCNTTApi.Controllers
             }
         }
 
-        //[Route("signin-google")]
-        //public IActionResult SignInGoogle()
-        //{
-        //    var properties = new AuthenticationProperties { RedirectUri = "/callback-google" };
-        //    return Challenge(properties, "Google");
-        //}
-
-        //[Route("callback-google")]
-        //public async Task<IActionResult> CallbackGoogle()
-        //{
-        //    var authenticateResult = await HttpContext.AuthenticateAsync("Google");
-
-        //    if (!authenticateResult.Succeeded)
-        //    {
-        //        // Xử lý lỗi xác thực
-        //        return RedirectToAction("Login");
-        //    }
-
-        //    // Lấy thông tin người dùng từ authenticateResult.Principal
-
-        //    // Xử lý đăng nhập thành công
-        //    return RedirectToAction("Index");
-        //}
-
+        public IActionResult ViewSchedule()
+        {
+            return View();
+        }
+        public IActionResult TeachingCourse()
+        {
+            return View();
+        }
     }
 }

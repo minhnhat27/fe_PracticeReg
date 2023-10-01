@@ -17,7 +17,7 @@ $(document).ready(function () {
 
     boxes.on('dragover', function (e) {
         var box = $(this)
-        if (box.children().length !== 0) {
+        if (box.children().length !== 0 || box.hasClass("dayoff")) {
             e.preventDefault = null;
         }
         else {
