@@ -1,15 +1,29 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    //options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
     .AddCookie(options =>
     {
         options.LoginPath = "/Account/SignIn";
         options.AccessDeniedPath = "/Account/Forbidden/";
+    })
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+        options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
+        //options.SaveTokens = true;
     });
 
 //builder.Services.Configure<IdentityOptions>(options =>

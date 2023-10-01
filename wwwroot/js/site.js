@@ -5,7 +5,9 @@
         $("#error").fadeOut('slow')
     }, 1000);
 }
-
+setTimeout(function () {
+    $("#error-google").fadeOut('slow')
+}, 2000);
 
 $(document).ready(function () {
     var lists = $(".item")

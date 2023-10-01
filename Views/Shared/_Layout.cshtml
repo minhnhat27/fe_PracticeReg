@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims;
 @* 
 @inject UserManager<GiangVien> _userManager;
 @inject SignInManager<GiangVien> _signinManager; *@
@@ -126,6 +127,10 @@
                         </li>
                     </ul>
                     <div id="error" class="m-1" role="alert"></div>
+                    @if (!string.IsNullOrEmpty(ViewBag.Message))
+                    {
+                        <div id="error-google" class="alert alert-danger m-1" role="alert">@ViewBag.Message</div>
+                    }
                     <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
                         <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
                             <li class="nav-item">
@@ -134,10 +139,28 @@
                                     <div class="notification bg-primary rounded-circle"></div>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <div class="m-1" role="alert">@User.FindFirstValue(ClaimTypes.Name) (@User.FindFirstValue(ClaimTypes.NameIdentifier))</div>
+                                }
+                            </li>
                             <li class="nav-item dropdown">
-                                <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <img src="~/css/images/user.jpg" alt="" width="35" height="35" class="rounded-circle">
-                                </a>
+                                @{
+                                    var userPic = Context.Request.Cookies["UserPic"];
+                                    if (!string.IsNullOrEmpty(userPic))
+                                    {
+                                        <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <img src="@userPic" alt="" width="35" height="35" class="rounded-circle">
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <img src="~/css/images/user.jpg" alt="" width="35" height="35" class="rounded-circle">
+                                        </a>
+                                    }
+                                }
                                 @if (User.Identity.IsAuthenticated)
                                 {
                                     <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
