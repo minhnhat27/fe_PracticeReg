@@ -23,47 +23,13 @@ builder.Services.AddAuthentication(options =>
         options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
         options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
         options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
-        //options.SaveTokens = true;
     });
 
-//builder.Services.Configure<IdentityOptions>(options =>
-//{
-//    options.Password.RequireDigit = true;
-//    options.Password.RequiredLength = 5;
-//    options.Password.RequireNonAlphanumeric = false;
-//    options.Password.RequireUppercase = false;
-//    options.Password.RequireLowercase = false;
-
-//    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-//    options.Lockout.MaxFailedAccessAttempts = 5;
-//    options.Lockout.AllowedForNewUsers = true;
-
-//    options.User.RequireUniqueEmail = true;
-
-//    options.SignIn.RequireConfirmedEmail = true;
-//    options.SignIn.RequireConfirmedPhoneNumber = false;
-//});
-
-//builder.Services.ConfigureApplicationCookie(options => {
-//    // options.Cookie.HttpOnly = true;  
-//    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-//    options.LoginPath = $"/login/";
-//    options.LogoutPath = $"/logout/";
-//    options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
-//});
+builder.Services.AddApplicationInsightsTelemetry();
 
 //builder.Services.AddOptions();
 //builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 //builder.Services.AddSingleton<IEmailSender, SendMailService>();
-
-//builder.Services.AddAuthentication()
-//    .AddGoogle(googleOptions =>
-//    {
-//        IConfigurationSection ggAuthSection = builder.Configuration.GetSection("Authentication:Google");
-//        googleOptions.ClientId = ggAuthSection["ClientId"]!;
-//        googleOptions.ClientSecret = ggAuthSection["ClientSecret"]!;
-//        googleOptions.CallbackPath = "/login-with-Google";
-//    });
 
 var app = builder.Build();
 

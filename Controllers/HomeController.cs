@@ -4,13 +4,14 @@ using Microsoft.IdentityModel.Tokens;
 using MyWebAPI.Data.ViewModels.Schedule;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
-using System.Runtime.Serialization;
+using System.Security.Claims;
 
 namespace DangKyPhongThucHanhCNTTApi.Controllers
 {
     public class HomeController : Controller
     {
         Uri baseAddress = new Uri("https://localhost:44304/api");
+        //Uri baseAddress = new Uri("http://localhost:8000/api");
         private readonly HttpClient _client;
         public HomeController()
         {
@@ -26,14 +27,23 @@ namespace DangKyPhongThucHanhCNTTApi.Controllers
         [Authorize]
         public async Task<IActionResult> Schedule()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, baseAddress + "/Schedule/GetTeachingofLecturer");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Request.Cookies["AuthToken"]);
+            var user = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Request.Cookies["AuthToken"]);
+            var response = await _client.PostAsJsonAsync(baseAddress + "/Schedule/GetTeachingofLecturer", user);
             
-            var response = await _client.SendAsync(request);
             var data = response.Content.ReadAsStringAsync().Result;
-            var list = JsonConvert.DeserializeObject<LichGiangDayVM>(data);
-            
-            if(list == null)
+            var list = new LichGiangDayVM();
+            try
+            {
+                 list = JsonConvert.DeserializeObject<LichGiangDayVM>(data);
+            }
+            catch(Exception)
+            {
+                ModelState.AddModelError("Error", "Có lỗi xảy ra. Không thể lấy thông tin!");
+                return View("Index");
+            }
+
+            if (list == null)
             {
                 ModelState.AddModelError(string.Empty, "Có lỗi xảy ra. Không thể xác thực người dùng!");
                 return View("Index");

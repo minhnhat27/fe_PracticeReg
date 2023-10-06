@@ -2,13 +2,11 @@ body, html {
     height: 100%;
     width: 100%;
 }
-
 #map {
-    height: 50%;
-    width: 20%;
+    height: 100%;
+    width: 100%;
 }
-
-.item{
+.item {
     margin: 5px 0;
     width: 70%;
 }
@@ -42,8 +40,11 @@ td.box{
     padding: 5px;
     overflow: auto;
 }
-th{
-    width: 1000px;
+thead tr th:not(:first-child){
+    width: 100px;
+}
+.tbody tr td:not(:first-child) {
+    width: 100px;
 }
 #logoGG{
     width: 8%;

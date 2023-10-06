@@ -10,15 +10,13 @@ using Microsoft.IdentityModel.Logging;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Google;
-using NuGet.Protocol.Plugins;
-using Microsoft.AspNetCore.Identity;
-using Org.BouncyCastle.Asn1.Pkcs;
 
 namespace DangKyPhongThucHanhCNTTApi.Controllers
 {
     public class AccountController : Controller
     {
         Uri baseAddress = new Uri("https://localhost:44304/api");
+        //Uri baseAddress = new Uri("http://localhost:8000/api");
         private readonly HttpClient _client;
         private readonly IConfiguration _config;
 
@@ -95,11 +93,10 @@ namespace DangKyPhongThucHanhCNTTApi.Controllers
             var cookieOptions = new CookieOptions
             {
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
                 Path = "/",
-                //HttpOnly = true,
                 IsEssential = true,
-                Expires = DateTime.Now.AddDays(1)
+                Expires = DateTime.Now.AddDays(1),
+                SameSite = SameSiteMode.None
             };
             Response.Cookies.Append("AuthToken", token, cookieOptions);
 
@@ -126,38 +123,46 @@ namespace DangKyPhongThucHanhCNTTApi.Controllers
                 var userEmail = result.Principal.FindFirstValue(ClaimTypes.Email);
                 var userPic = result.Principal.FindFirstValue("urn:google:picture")!;
 
-                var response = await _client.PostAsJsonAsync(baseAddress + "/User/ExternalLogin", userEmail);
-                var content = response.Content.ReadAsStringAsync().Result;
-                var data = JsonConvert.DeserializeObject<ApiResponse>(content)!;
-
-                if (!data.success)
+                try
                 {
-                    TempData["ErrorMessage"] = "Tài khoản Google không hợp lệ. Vui lòng đăng nhập tài khoản khác!";
+                    var response = await _client.PostAsJsonAsync(baseAddress + "/User/ExternalLogin", userEmail);
+                    var content = response.Content.ReadAsStringAsync().Result;
+                    var data = JsonConvert.DeserializeObject<ApiResponse>(content)!;
+
+                    if (!data.success)
+                    {
+                        TempData["ErrorMessage"] = "Tài khoản Google không hợp lệ. Vui lòng đăng nhập tài khoản khác!";
+                        await HttpContext.SignOutAsync();
+                        return RedirectToAction("SignIn");
+                    }
+
+                    var token = data.data!;
+                    var userClaims = validateToken(token);
+
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userClaims);
+                    var cookieOptions = new CookieOptions
+                    {
+                        Secure = true,
+                        Path = "/",
+                        IsEssential = true,
+                        Expires = DateTime.Now.AddDays(1),
+                        SameSite = SameSiteMode.None
+                    };
+                    Response.Cookies.Append("AuthToken", token, cookieOptions);
+                    Response.Cookies.Append("UserPic", userPic, new CookieOptions{ Expires= DateTime.Now.AddDays(1)});
+
+                    return RedirectToAction("Index", "Home");
+                }
+                catch
+                {
+                    TempData["ErrorMessage"] = "Có lỗi xảy ra. Vui lòng thử lại sau!";
                     await HttpContext.SignOutAsync();
                     return RedirectToAction("SignIn");
                 }
-
-                var token = data.data!;
-                var userClaims = validateToken(token);
-
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userClaims);
-                var cookieOptions = new CookieOptions
-                {
-                    Secure = true,
-                    SameSite = SameSiteMode.Strict,
-                    Path = "/",
-                    //HttpOnly = true,
-                    IsEssential = true,
-                    Expires = DateTime.Now.AddDays(1)
-                };
-                Response.Cookies.Append("AuthToken", token, cookieOptions);
-                Response.Cookies.Append("UserPic", userPic);
-
-                return RedirectToAction("Index", "Home");
             }
             else
             {
-                return RedirectToAction("SignIn", "Account");
+                return RedirectToAction("SignIn");
             }
         }
 
