@@ -6,6 +6,8 @@
     }, 1000);
 }
 
+
+
 $(document).ready(function () {
     var lists = $(".item")
     var left = $("#list")

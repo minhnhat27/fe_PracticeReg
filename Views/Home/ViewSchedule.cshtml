@@ -1,1 +1,116 @@
-﻿
+﻿@model MyWebAPI.Data.ViewModels.Schedule.ViewSchedule
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutBlank.cshtml";
+}
+
+@{
+    int currentPage = 1;
+    var page = Context.Request.Query["page"];
+    if (!string.IsNullOrEmpty(page))
+    {
+        currentPage = Convert.ToInt32(page);
+    }
+}
+<div class="col-md-2 col-6 mb-2">
+    <select class="form-select border border-secondary text-black fw-bolder" onchange="window.location.href = '/Home/ViewSchedule?page=' + this.value;">
+        @for (int i = 1; i <= Model.sotuan; i++)
+        {
+            if (i == currentPage)
+            {
+                <option value="@i" selected>Tuần @i</option>
+            }
+            else
+            {
+                <option value="@i">Tuần @i</option>
+            }
+        }
+    </select>
+</div>
+<div class="table-responsive">
+    <table class="table table-bordered border-dark-subtle align-middle text-center">
+        <thead class="thead-schedule">
+            <tr>
+                <th scope="col" rowspan="2">Buổi</th>
+                <th scope="col" rowspan="2">Phòng</th>
+                <th scope="col">Thứ 2</th>
+                <th scope="col">Thứ 3</th>
+                <th scope="col">Thứ 4</th>
+                <th scope="col">Thứ 5</th>
+                <th scope="col">Thứ 6</th>
+                <th scope="col">Thứ 7</th>
+                <th scope="col">Chủ nhật</th>
+            </tr>
+            <tr class="date fs-2">
+                @{
+                    var ngaybatdauhk = Model.ngaybatdauhk;
+                    var today = ngaybatdauhk.AddDays((currentPage - 1) * 7);
+                    var wDay = today;
+                    
+                    for (var i = 1; i <= 7; i++)
+                    {
+                        <th>
+                            @{
+                                Write(wDay.ToString("dd/MM/yyyy"));
+                                wDay = wDay.AddDays(1);
+                            }
+                        </th>
+                    }
+                }
+            </tr>
+        </thead>
+        <tbody class="tbody-schedule">
+        <th scope="row" rowspan="@(Model.phong.Count+1)">Sáng</th>
+            @{
+                foreach(var p in Model.phong)
+                {
+                    <tr>
+                        <td>@p</td>
+                        @{
+                            wDay = today;
+                        }
+                        @for (int i = 1; i <= 7; i++)
+                        {
+                            <td class="p-1">
+                                @foreach (var lich in Model.lichThucHanhs)
+                                {
+                                    if (lich.phong == p && lich.ngaythuchanh.Equals(wDay) && lich.buoi == "Morning")
+                                    {
+                                    <p class="fs-2"><b>@lich.manhomhp</b> - @lich.tenhp <br> @lich.hoten</p>
+                                    }
+                                }
+                            </td>
+                            wDay = wDay.AddDays(1);
+                        }
+                    </tr>
+                }
+            }
+        <th scope="row" rowspan="@(Model.phong.Count+1)">Chiều</th>
+            @{
+                foreach (var p in Model.phong)
+                {
+                <tr>
+                    <td>@p</td>
+                    @{
+                        wDay = today;
+                    }
+                    @for (int i = 1; i <= 7; i++)
+                    {
+                        <td class="p-1">
+                            @foreach (var lich in Model.lichThucHanhs)
+                            {
+                                if (lich.phong == p && lich.ngaythuchanh.Equals(wDay) && lich.buoi == "Afternoon")
+                                {
+                                    <p class="fs-2"><b>@lich.manhomhp</b> - @lich.tenhp <br> @lich.hoten</p>
+                                }
+                            }
+                        </td>
+                    wDay = wDay.AddDays(1);
+                    }
+                </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

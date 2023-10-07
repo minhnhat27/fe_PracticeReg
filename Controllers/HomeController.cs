@@ -86,9 +86,25 @@ namespace DangKyPhongThucHanhCNTTApi.Controllers
             }
         }
 
-        public IActionResult ViewSchedule()
+        public async Task<IActionResult> ViewSchedule()
         {
-            return View();
+            var response = await _client.GetAsync(baseAddress + "/Schedule/getPraticeSchedule");
+            var data = response.Content.ReadAsStringAsync().Result;
+            try
+            {
+                var list = JsonConvert.DeserializeObject<ViewSchedule>(data);
+                if (list == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Có lỗi xảy ra!");
+                    return RedirectToAction("Index");
+                }
+                return View(list);
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("Error", "Có lỗi xảy ra. Không thể lấy thông tin!");
+                return View("Index");
+            }
         }
         public IActionResult TeachingCourse()
         {
