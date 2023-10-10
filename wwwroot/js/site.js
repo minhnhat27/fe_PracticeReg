@@ -5,9 +5,6 @@
         $("#error").fadeOut('slow')
     }, 1000);
 }
-
-
-
 $(document).ready(function () {
     var lists = $(".item")
     var left = $("#list")
@@ -98,80 +95,85 @@ $(document).ready(function () {
         }
         selected = null;
     })
-
     lists.on('drag', function () {
         selected =  $(this)
     })
-
-    //mobile
-    var selectedItem = null;
-    lists.on('touchend', function () {
-        var touchedItem = $(this);
-        if (selectedItem !== null && selectedItem[0] !== touchedItem[0]) {
-            selectedItem.children().removeClass("bg-primary-subtle");
-        }
-        touchedItem.children().addClass("bg-primary-subtle");
-        selectedItem = touchedItem;
-    })
-    boxes.on('touchend', function () {
-        var box = $(this)
-        if (box.children().length === 0 && selectedItem !== null) {
-            box.append(selectedItem)    
-            selectedItem.children().removeClass("bg-primary-subtle");
-
-            var param = {
-                "ngaythuchanh": box.data("ngay"),
-                "buoi": box.data("buoi"),
-                "sotuan": parseInt(box.data("tuan")),
-                "hknk": $("#schedule").data("hknh"),
-                "mscb": $("#schedule").data("mscb"),
-                "sttbuoithuchanh": parseInt(box.children(".item").children().data("sttbuoi")),
-                "manhomhp": box.children(".item").children().data("manhom")
-            };
-
-            $.ajax({
-                url: "/Home/CreateSchedule",
-                type: 'POST',
-                data: param,
-                success: function (data) {
-                    if (data)
-                        showAlert("Thêm lịch thành công");
-                    else showAlert("Thêm lịch thất bại. Có lỗi xảy ra!");
-                }
-            });
-        }
-        selectedItem = null;
-    })
-    //left.on('touchend', function () {
-    //    if (selectedItem !== null) {
-    //        left.append(selectedItem);
-    //        selectedItem.children().removeClass("bg-primary-subtle");
-
-    //        var param = {
-    //            "ngaythuchanh": "01/01/2000",
-    //            "buoi": "Morning",
-    //            "sotuan": 1,
-    //            "hknk": $("#schedule").data("hknh"),
-    //            "mscb": $("#schedule").data("mscb"),
-    //            "sttbuoithuchanh": parseInt(selectedItem.children().data("sttbuoi")),
-    //            "manhomhp": selectedItem.children().data("manhom")
-    //        };
-
-    //        $.ajax({
-    //            url: "/Home/updateOnSchedule",
-    //            type: 'POST',
-    //            data: param,
-    //            success: function (data) {
-    //                if (data)
-    //                    showAlert("Xóa lịch thành công");
-    //                else showAlert("Xóa lịch thất bại. Có lỗi xảy ra!");
-    //            }
-    //        });
-
-    //    }
-    //    selectedItem = null;
-    //})
 })
+
+//$(document).ready(function () {
+//    var lists = $(".item")
+//    var left = $("#list")
+//    var boxes = $(".box")
+//    //mobile
+//    var selectedItem = null;
+
+//    lists.on('touchend', function () {
+//        var touchedItem = $(this);
+//        if (selectedItem !== null && selectedItem[0] !== touchedItem[0]) {
+//            selectedItem.children().removeClass("bg-primary-subtle");
+//        }
+//        touchedItem.children().addClass("bg-primary-subtle");
+//        selectedItem = touchedItem;
+//    })
+//    boxes.on('touchend', function () {
+//        var box = $(this)
+//        if (box.children().length === 0 && selectedItem !== null) {
+//            box.append(selectedItem)
+//            selectedItem.children().removeClass("bg-primary-subtle");
+
+//            var param = {
+//                "ngaythuchanh": box.data("ngay"),
+//                "buoi": box.data("buoi"),
+//                "sotuan": parseInt(box.data("tuan")),
+//                "hknk": $("#schedule").data("hknh"),
+//                "mscb": $("#schedule").data("mscb"),
+//                "sttbuoithuchanh": parseInt(box.children().data("sttbuoi")),
+//                "manhomhp": box.children().data("manhom")
+//            };
+
+//            $.ajax({
+//                url: "/Home/CreateSchedule",
+//                type: 'POST',
+//                data: param,
+//                success: function (data) {
+//                    if (data)
+//                        showAlert("Thêm lịch thành công");
+//                    else showAlert("Thêm lịch thất bại. Có lỗi xảy ra!");
+//                }
+//            });
+//        }
+//        selectedItem = null;
+//    })
+//    left.on('touchend', function () {
+//        if (selectedItem !== null) {
+//            left.append(selectedItem);
+//            selectedItem.children().removeClass("bg-primary-subtle");
+
+//            var param = {
+//                "ngaythuchanh": "01/01/2000",
+//                "buoi": "Morning",
+//                "sotuan": 1,
+//                "hknk": $("#schedule").data("hknh"),
+//                "mscb": $("#schedule").data("mscb"),
+//                "sttbuoithuchanh": parseInt(selectedItem.children().data("sttbuoi")),
+//                "manhomhp": selectedItem.children().data("manhom")
+//            };
+
+//            $.ajax({
+//                url: "/Home/updateOnSchedule",
+//                type: 'POST',
+//                data: param,
+//                success: function (data) {
+//                    if (data)
+//                        showAlert("Xóa lịch thành công");
+//                    else showAlert("Xóa lịch thất bại. Có lỗi xảy ra!");
+//                }
+//            });
+
+//        }
+//        selectedItem = null;
+//    })
+//}
 
 $(document).ready(function () {
     var currentLocation = window.location.pathname;
@@ -213,8 +215,7 @@ myLocationButton.addTo(mapObject);
 //$.getJSON(url, function (data) {
 //    L.geoJSON(data).addTo(mapObject);
 //})
-
-//$.getJSON('data/thunhapbinhquan.json', function(data){
+//$.getJSON('data/thunhapbinhquan.json', function (data) {
 //    //L.geoJSON(data).addTo(mapObject);
 //    L.geoJSON(data).bindPopup((f) => '<h2>' + f.feature.properties.Name_VI +
 //        '</h2><p>Thu nhập bình quân: ' + f.feature.properties.Income + '000VND</p>').addTo(mapObject);

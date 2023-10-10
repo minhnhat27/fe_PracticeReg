@@ -87,7 +87,7 @@ namespace DangKyPhongThucHanhCNTTApi.Controllers
             var authProperties = new AuthenticationProperties
             {
                 ExpiresUtc = DateTime.UtcNow.AddDays(1),
-                IsPersistent = false
+                IsPersistent = true
             };
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userClaims, authProperties);
             var cookieOptions = new CookieOptions
@@ -95,8 +95,9 @@ namespace DangKyPhongThucHanhCNTTApi.Controllers
                 Secure = true,
                 Path = "/",
                 IsEssential = true,
+                HttpOnly = true,
                 Expires = DateTime.Now.AddDays(1),
-                SameSite = SameSiteMode.None
+                SameSite = SameSiteMode.Lax
             };
             Response.Cookies.Append("AuthToken", token, cookieOptions);
 
@@ -111,7 +112,7 @@ namespace DangKyPhongThucHanhCNTTApi.Controllers
             {
                 RedirectUri = Url.Action("CallBackGoogle"),
                 ExpiresUtc = DateTime.UtcNow.AddDays(1),
-                IsPersistent = false
+                IsPersistent = true
             });
         }
 
@@ -144,9 +145,10 @@ namespace DangKyPhongThucHanhCNTTApi.Controllers
                     {
                         Secure = true,
                         Path = "/",
+                        HttpOnly = true,
                         IsEssential = true,
                         Expires = DateTime.Now.AddDays(1),
-                        SameSite = SameSiteMode.None
+                        SameSite = SameSiteMode.Lax
                     };
                     Response.Cookies.Append("AuthToken", token, cookieOptions);
                     Response.Cookies.Append("UserPic", userPic, new CookieOptions{ Expires= DateTime.Now.AddDays(1)});

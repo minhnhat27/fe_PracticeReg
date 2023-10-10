@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +21,7 @@ builder.Services.AddAuthentication(options =>
         options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
         options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
         options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
+        options.CorrelationCookie.SameSite = SameSiteMode.Lax;
     });
 
 builder.Services.AddApplicationInsightsTelemetry();
