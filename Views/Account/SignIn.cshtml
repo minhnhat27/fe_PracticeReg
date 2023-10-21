@@ -11,30 +11,28 @@
                             <div class="mb-3">
                                 <label asp-for="MSCB" class="form-label">MSCB</label>
                                 <input type="text" asp-for="MSCB" value="@ViewBag.MSCB" class="form-control fs-2" id="MSCB" aria-describedby="emailHelp">
-                                <span asp-validation-for="MSCB" class="text-danger"></span>
+                                <span asp-validation-for="MSCB" class="text-danger fs-2"></span>
                             </div>
-                            <div class="mb-4">
+                            <div class="mb-3">
                                 <label asp-for="Password" class="form-label">Mật khẩu</label>
                                 <input type="password" asp-for="Password" class="form-control" id="Password">
-                                <span asp-validation-for="Password" class="text-danger"></span>
+                                <span asp-validation-for="Password" class="text-danger fs-2"></span>
                                 <span>
                                     @Html.ValidationMessage("ErrorPassword", new { @class = "text-danger fs-2" })
                                 </span>
-                                @if (!string.IsNullOrEmpty(ViewBag.Message))
+                                @if (!string.IsNullOrEmpty(ViewBag.MessagePassword))
                                 {
-                                    <span>
-                                        <div class="text-danger fs-2" role="alert">@ViewBag.Message</div>
-                                    </span>
+                                    <span class="text-danger fs-2" role="alert">@ViewBag.MessagePassword</span>
                                 }
                             </div>                            
                             <div class="d-flex align-items-center justify-content-between mb-4">
-                                <div class="form-check">
+                                @* <div class="form-check">
                                     <input class="form-check-input primary" type="checkbox" value="" id="flexCheckChecked" checked>
                                     <label class="form-check-label text-dark" for="flexCheckChecked">
                                         Ghi nhớ mật khẩu
                                     </label>
-                                </div>
-                                <a class="text-primary fw-bold" href="/Home/Index">Quên mật khẩu?</a>
+                                </div> *@
+                                <a class="text-primary fw-bold" onclick="deletelocal()" href="/Account/ForgetPassword">Quên mật khẩu?</a>
                             </div>
                             <button type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2">Đăng nhập</button>
                             <a asp-controller="Account" asp-action="SignInGoogle" class="d-flex align-items-center justify-content-center">
@@ -48,3 +46,10 @@
     </div>
 </div>
 
+@section Scripts{
+    <script>
+        function deletelocal(){
+            localStorage.removeItem('forgetpassword');
+        }
+    </script>
+}

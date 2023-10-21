@@ -37,7 +37,7 @@ namespace DangKyPhongThucHanhCNTTApi.Controllers
             var message = TempData["ErrorMessage"] as string;
             if (!message.IsNullOrEmpty())
             {
-                ViewBag.Message = message;
+                ViewBag.MessagePassword = message;
             }
             return View();
         }
@@ -175,6 +175,100 @@ namespace DangKyPhongThucHanhCNTTApi.Controllers
             Response.Cookies.Delete("UserPic");
             await HttpContext.SignOutAsync();
             return RedirectToAction("SignIn");
+        }
+
+        public async Task<bool> getToken(string id)
+        {
+            var response = await _client.PostAsJsonAsync(baseAddress + "/User/sendToken", id);
+            var content = response.Content.ReadAsStringAsync().Result;
+            var data = JsonConvert.DeserializeObject<ApiResponse>(content)!;
+            if (data.success)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        [HttpGet]
+        public IActionResult ForgetPassword()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> ForgetPassword(ForgetPasswordModel forgetPassword)
+        {
+            if(forgetPassword.token == null)
+            {
+                return View();
+            }
+            var response = await _client.PostAsJsonAsync(baseAddress + "/User/checkToken", forgetPassword);
+            var content = response.Content.ReadAsStringAsync().Result;
+            var data = JsonConvert.DeserializeObject<ApiResponse>(content)!;
+            if (data.success)
+            {
+                TempData["ResetToken"] = JsonConvert.SerializeObject(forgetPassword);
+                TempData["Session"] = forgetPassword.id;
+                return RedirectToAction("ConfirmPassword");
+            }
+            else
+            {
+                ModelState.AddModelError("ErrorToken", "Mã xác nhận không chính xác.");
+                return View();
+            }
+        }
+
+        [HttpGet]
+        public IActionResult ConfirmPassword()
+        {
+            var model = TempData["Session"] as string;
+            if (model == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return View();
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> ConfirmPassword(ConfirmPasswordModel confirmPassword)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+            if (!confirmPassword.pass.Equals(confirmPassword.newPassword))
+            {
+                ModelState.AddModelError("ErrorConfirmPassword", "Mật khẩu xác nhận không chính xác");
+                return View();
+            }
+            try
+            {
+                var tempData = TempData["ResetToken"]!.ToString();
+                var model = JsonConvert.DeserializeObject<ForgetPasswordModel>(tempData!);
+                model!.newPassword = confirmPassword.newPassword;
+                var response = await _client.PostAsJsonAsync(baseAddress + "/User/changePassword", model);
+                var content = response.Content.ReadAsStringAsync().Result;
+                var data = JsonConvert.DeserializeObject<ApiResponse>(content)!;
+                if (data.success)
+                {
+                    TempData["ErrorMessage"] = "Đổi mật khẩu thành công. Vui lòng đăng nhập lại";
+                    return RedirectToAction("SignIn");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Mật khẩu không đúng định dạng";
+                    return View();
+                }
+            }
+            catch(Exception)
+            {
+                TempData["ErrorMessage"] = "Có lỗi xảy ra. Vui lòng thử lại";
+                return RedirectToAction("SignIn");
+            }
         }
     }
 }

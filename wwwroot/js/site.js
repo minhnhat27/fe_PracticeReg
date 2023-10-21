@@ -188,39 +188,6 @@ $(document).ready(function () {
     });
 });
 
-var mapObject = L.map("map", { center: [10.031014, 105.769094], zoom: 15, doubleClickZoom: false });
-L.tileLayer(
-    "http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}",
-    {
-        attribution: '&copy; <a href="https://www.google.com/help/legalnotices_maps/" target="_blank">GoogleStreetMap</a>'
-    }
-).addTo(mapObject);
-L.marker([10.030773, 105.768888], {title: "Trường CNTT&TT"}).addTo(mapObject);
-
-var myLocationButton = L.control({ position: 'topleft' });
-myLocationButton.onAdd = function () {
-    var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-    var button = L.DomUtil.create('a', 'leaflet-control-my-location', container);
-    button.href = 'javascript:void(0)';
-    button.title = 'Tìm trường CNTT&TT';
-    button.innerHTML = '<i class="bi bi-cursor"></i>';
-    L.DomEvent.on(button, 'click', function () {
-        mapObject.setView([10.031014, 105.769094], 17)
-    });
-    return container;
-};
-myLocationButton.addTo(mapObject);
-
-//var url = "https://data.vietnam.opendevelopmentmekong.net/geoserver/ODVietnam/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ODVietnam%3A0fe4de63-d3da-4a10-b471-087b85ea28a9&outputFormat=application%2Fjson";
-//$.getJSON(url, function (data) {
-//    L.geoJSON(data).addTo(mapObject);
-//})
-//$.getJSON('data/thunhapbinhquan.json', function (data) {
-//    //L.geoJSON(data).addTo(mapObject);
-//    L.geoJSON(data).bindPopup((f) => '<h2>' + f.feature.properties.Name_VI +
-//        '</h2><p>Thu nhập bình quân: ' + f.feature.properties.Income + '000VND</p>').addTo(mapObject);
-//})
-
 // const scrollingElement = document.getElementById("Course");
 
 // window.addEventListener("scroll", () => {

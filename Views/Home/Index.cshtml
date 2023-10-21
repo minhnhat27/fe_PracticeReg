@@ -3,4 +3,107 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div id="map" class="position-fixed" style="width: 100%; max-height: 250px; max-width: 400px; right: 0; bottom: 0"></div>
+<div id="map" class="position-fixed" style="width: 100%; max-height: 250px; max-width: 550px; right: 0; bottom: 0"></div>
+
+@section Scripts{
+    <script>
+        var mapObject = L.map("map", { center: [10.031014, 105.769094], zoom: 14, doubleClickZoom: false });
+        L.tileLayer("http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}",
+            {
+                attribution: '&copy; <a href="https://www.google.com/help/legalnotices_maps/" target="_blank">GoogleStreetMap</a>'
+            }
+        ).addTo(mapObject);
+        // L.marker([10.030773, 105.768888], { title: "Trường CNTT&TT" }).addTo(mapObject);
+
+        var combobox = L.control({ position: "topleft" });
+        combobox.onAdd = function (map) {
+            var div = L.DomUtil.create("div", "");
+            div.innerHTML = '<select id="combobox"></select>';
+            return div;
+        };
+        combobox.addTo(mapObject);
+
+        var urlJSON = "https://localhost:44304/api/Map/Dulieumau";
+        $.getJSON(urlJSON + "?q=ALL", function (data) {
+            var menu = $("#combobox");
+            menu.append("<option data-id='ALL'>Tất cả</option>");
+            $.each(data.features, function (key, value) {
+                menu.append("<option data-id=" + value.id + ">" + value.properties.name + "</option>");
+            });
+        });
+
+        var layerObject = L.layerGroup().addTo(mapObject);
+        var sql = "?q=ALL";
+        $.getJSON(urlJSON + sql, function (data) {
+            var lineStyle = { color: "blue", weight: 4 };
+            var polygonStyle = { color: "red", fillColor: "yellow", weight: 4 };
+            L.geoJSON(data, {
+                style: function (feature) {
+                    switch (feature.geometry.type) {
+                        case 'LineString': return lineStyle;
+                        case 'Polygon': return polygonStyle;
+                    }
+                },
+                onEachFeature: function (feature, layer) {
+                    if (feature.properties && feature.properties.name) {
+                        layer.bindPopup("<i>" + feature.properties.name + "</i>");
+                    }
+                }
+            }).addTo(layerObject);
+        })
+
+        $("#combobox").on("change", function () {
+            var valueSelected = $("#combobox option:selected").data("id");
+            if (valueSelected == "ALL") {
+                sql = "?q=ALL";
+            } else {
+                sql = "?q=" + valueSelected;
+            }
+
+            $.getJSON(urlJSON + sql, function (data) {
+                layerObject.clearLayers();
+
+                var lineStyle = { color: "blue", weight: 4 };
+                var polygonStyle = { color: "red", fillColor: "yellow", weight: 4 };
+                L.geoJSON(data, {
+                    style: function (feature) {
+                        switch (feature.geometry.type) {
+                            case 'LineString': return lineStyle;
+                            case 'Polygon': return polygonStyle;
+                        }
+                    },
+                    onEachFeature: function (feature, layer) {
+                        if (feature.properties && feature.properties.name) {
+                            layer.bindPopup("<i>" + feature.properties.name + "</i>");
+                        }
+                    }
+                }).addTo(layerObject);
+            })
+        });
+
+        var myLocationButton = L.control({ position: 'topleft' });
+        myLocationButton.onAdd = function () {
+            var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+            var button = L.DomUtil.create('a', '', container);
+            button.href = 'javascript:void(0)';
+            button.title = 'Tìm trường CNTT&TT';
+            button.innerHTML = '<i class="bi bi-cursor"></i>';
+            L.DomEvent.on(button, 'click', function () {
+                mapObject.setView([10.031014, 105.769094], 17)
+            });
+            return container;
+        };
+        myLocationButton.addTo(mapObject);
+
+        //var url = "https://data.vietnam.opendevelopmentmekong.net/geoserver/ODVietnam/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ODVietnam%3A0fe4de63-d3da-4a10-b471-087b85ea28a9&outputFormat=application%2Fjson";
+        //$.getJSON(url, function (data) {
+        //    L.geoJSON(data).addTo(mapObject);
+        //})
+
+        //$.getJSON('data/thunhapbinhquan.json', function (data) {
+        //    //L.geoJSON(data).addTo(mapObject);
+        //    L.geoJSON(data).bindPopup((f) => '<h2>' + f.feature.properties.Name_VI +
+        //        '</h2><p>Thu nhập bình quân: ' + f.feature.properties.Income + '000VND</p>').addTo(mapObject);
+        //})
+    </script>
+}
