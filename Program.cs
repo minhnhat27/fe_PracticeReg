@@ -9,7 +9,6 @@ builder.Services.AddRazorPages();
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    //options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
 })
     .AddCookie(options =>
     {
@@ -25,10 +24,6 @@ builder.Services.AddAuthentication(options =>
     });
 
 builder.Services.AddApplicationInsightsTelemetry();
-
-//builder.Services.AddOptions();
-//builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
-//builder.Services.AddSingleton<IEmailSender, SendMailService>();
 
 var app = builder.Build();
 

@@ -19,7 +19,6 @@ namespace DangKyPhongThucHanhCNTTApi.Controllers
         //Uri baseAddress = new Uri("http://localhost:8000/api");
         private readonly HttpClient _client;
         private readonly IConfiguration _config;
-
         public AccountController(IConfiguration config)
         {
             _client = new HttpClient();
@@ -210,7 +209,7 @@ namespace DangKyPhongThucHanhCNTTApi.Controllers
             if (data.success)
             {
                 TempData["ResetToken"] = JsonConvert.SerializeObject(forgetPassword);
-                TempData["Session"] = forgetPassword.id;
+                TempData["SessionForgetPassword"] = forgetPassword.id;
                 return RedirectToAction("ConfirmPassword");
             }
             else
@@ -223,7 +222,7 @@ namespace DangKyPhongThucHanhCNTTApi.Controllers
         [HttpGet]
         public IActionResult ConfirmPassword()
         {
-            var model = TempData["Session"] as string;
+            var model = TempData["SessionForgetPassword"] as string;
             if (model == null)
             {
                 return NotFound();

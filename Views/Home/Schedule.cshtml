@@ -4,8 +4,8 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-<div id="Course" class="col-md-2 position-fixed d-md-block d-none">
+@* d-md-flex justify-content-md-end *@
+<div id="Course" class="col-2 position-fixed d-sm-block d-none">
     @Html.ValidationMessage("Error")
     <div id="list" class="card align-items-center mt-2">
         @foreach (var items in Model.giangDays)
@@ -22,8 +22,8 @@
     </div>
 </div>
 
-<div class="d-md-flex justify-content-md-end">
-    <div id="schedule" data-hknh="@Model.hknh" data-mscb="@Model.mscb" class="col-md-9">
+<div class="row">
+    <div id="schedule" data-hknh="@Model.hknh" data-mscb="@Model.mscb" class="col-9 offset-3">
         @{
             var week = Model.sotuan;
             var ngaybatdau = Model.ngaybatdauhk;

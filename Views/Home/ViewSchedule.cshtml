@@ -7,27 +7,35 @@
 
 @{
     int currentPage = 1;
-    var page = Context.Request.Query["page"];
+    var page = Context.Request.Query["week"];
     if (!string.IsNullOrEmpty(page))
     {
         currentPage = Convert.ToInt32(page);
     }
 }
-<div class="col-xl-2 col-lg-4 col-md-6 col-12 mb-2">
-    <select class="form-select border border-secondary text-black fw-bolder" onchange="window.location.href = '/Home/ViewSchedule?page=' + this.value;">
-        @for (int i = 1; i <= Model.sotuan; i++)
-        {
-            if (i == currentPage)
+<div class="row mb-2">
+    <div class="col-xl-2 col-lg-4 col-md-6 col-11">
+        <select class="form-select border border-secondary text-black fw-bolder" onchange="window.location.href = '/Home/ViewSchedule?week=' + this.value;">
+            @for (int i = 1; i <= Model.sotuan; i++)
             {
-                <option value="@i" selected>Tuần @i</option>
+                if (i == currentPage)
+                {
+                    <option value="@i" selected>Tuần @i</option>
+                }
+                else
+                {
+                    <option value="@i">Tuần @i</option>
+                }
             }
-            else
-            {
-                <option value="@i">Tuần @i</option>
-            }
-        }
-    </select>
+        </select>
+    </div>
+    <div class="col-1 offset-xl-9 offset-lg-7 offset-md-5">
+        <a class="nav-link nav-icon-hover" title="Tải về lịch thực hành" href="/Home/downloadExcel">
+            <i class="bi bi-file-earmark-arrow-down-fill fs-6"></i>
+        </a>
+    </div>
 </div>
+
 <div class="table-responsive">
     <table class="table table-bordered border-dark-subtle align-middle text-center">
         <thead class="thead-schedule">

@@ -3,7 +3,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div id="map" class="position-fixed" style="width: 100%; max-height: 250px; max-width: 550px; right: 0; bottom: 0"></div>
+<div id="map" class="position-fixed" style="width: 100%; max-height: 400px; max-width: 900px; right: 0; bottom: 0"></div>
 
 @section Scripts{
     <script>
@@ -14,6 +14,7 @@
             }
         ).addTo(mapObject);
         // L.marker([10.030773, 105.768888], { title: "Trường CNTT&TT" }).addTo(mapObject);
+        var layerObject = L.layerGroup().addTo(mapObject);
 
         var combobox = L.control({ position: "topleft" });
         combobox.onAdd = function (map) {
@@ -24,17 +25,14 @@
         combobox.addTo(mapObject);
 
         var urlJSON = "https://localhost:44304/api/Map/Dulieumau";
-        $.getJSON(urlJSON + "?q=ALL", function (data) {
+        var sql = "?q=ALL";
+        $.getJSON(urlJSON + sql, function (data) {
             var menu = $("#combobox");
             menu.append("<option data-id='ALL'>Tất cả</option>");
             $.each(data.features, function (key, value) {
                 menu.append("<option data-id=" + value.id + ">" + value.properties.name + "</option>");
             });
-        });
 
-        var layerObject = L.layerGroup().addTo(mapObject);
-        var sql = "?q=ALL";
-        $.getJSON(urlJSON + sql, function (data) {
             var lineStyle = { color: "blue", weight: 4 };
             var polygonStyle = { color: "red", fillColor: "yellow", weight: 4 };
             L.geoJSON(data, {
@@ -50,7 +48,7 @@
                     }
                 }
             }).addTo(layerObject);
-        })
+        });
 
         $("#combobox").on("change", function () {
             var valueSelected = $("#combobox option:selected").data("id");
@@ -81,19 +79,100 @@
             })
         });
 
-        var myLocationButton = L.control({ position: 'topleft' });
-        myLocationButton.onAdd = function () {
-            var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-            var button = L.DomUtil.create('a', '', container);
-            button.href = 'javascript:void(0)';
-            button.title = 'Tìm trường CNTT&TT';
-            button.innerHTML = '<i class="bi bi-cursor"></i>';
-            L.DomEvent.on(button, 'click', function () {
-                mapObject.setView([10.031014, 105.769094], 17)
+        var pointStyle1 = L.icon({
+            iconUrl: "../css/images/marker-icon-2x.png",
+            shadowUrl: "../css/images/marker-shadow.png",
+            iconAnchor: [13, 41]
+        });
+        var pointStyle2 = L.icon({
+            iconUrl: "../css/images/marker-icon-red.png",
+            shadowUrl: "../css/images/marker-shadow.png",
+            iconAnchor: [13, 41]
+        });
+        var lineStyle1 = { color: "blue", weight: 2 };
+        var lineStyle2 = { color: "red", weight: 1 };
+
+        var urlGeoJSON = "https://localhost:44304/api/Map/Khoangcach?q="
+        var myLocation = L.layerGroup().addTo(mapObject);
+        var findLocations = L.layerGroup().addTo(mapObject);
+
+        mapObject.on("click", mapClick);
+        var control1 = L.control({ position: "topleft" });
+        control1.onAdd = map => {
+            var div = L.DomUtil.create("div", "div1");
+            div.innerHTML = '<input id="textbox1" style="width: 70%" type="number" />'
+            return div;
+        }
+        control1.addTo(mapObject);
+
+        var sqlQueryClosest;
+        function mapClick(e) {
+            layerObject.clearLayers();
+            myLocation.clearLayers();
+            L.marker(e.latlng, { icon: pointStyle2 }).addTo(myLocation);
+            var clickCoords = e.latlng;
+            findLocations.clearLayers();
+
+            var value = $("#textbox1").val();
+            if (value != "") {
+                sqlQueryClosest = "Select Id, The_geom, Name, ROUND(geography::STGeomFromText(The_geom.STAsText(), 4326).STDistance(geography::STGeomFromText('POINT(" + clickCoords.lng + " " + clickCoords.lat + ")', 4326)), 2) as dis_met from dulieumau "
+                    + "where ROUND(geography::STGeomFromText(The_geom.STAsText(), 4326).STDistance(geography::STGeomFromText('POINT(" + clickCoords.lng + " " + clickCoords.lat + ")', 4326)), 2) < " + value;
+            }
+            else {
+                sqlQueryClosest = "Select Id, The_geom, Name, ROUND(geography::STGeomFromText(The_geom.STAsText(), 4326).STDistance(geography::STGeomFromText('POINT(" + clickCoords.lng + " " + clickCoords.lat + ")', 4326)), 2) as dis_met from dulieumau"
+            }
+            $.getJSON(urlGeoJSON + sqlQueryClosest).done(function (data) {
+                L.geoJSON(data, {
+                    onEachFeature: function (feature, layer) {
+                        layer.bindPopup("<i>" + feature.properties.name + "</i>" +
+                            "<br> Cách điểm chọn là: " + feature.properties.dis_met + " mét");
+
+                        var objectCoords = feature.geometry.coordinates;
+                        if (feature.geometry.type == "Point") {
+                            L.polyline([[clickCoords.lat, clickCoords.lng],
+                            [objectCoords[1], objectCoords[0]]],
+                                lineStyle2).addTo(findLocations);
+                        }
+                        if (feature.geometry.type == "LineString") {
+                            L.polyline([[clickCoords.lat, clickCoords.lng],
+                            [objectCoords[0][1], objectCoords[0][0]]],
+                                lineStyle2).addTo(findLocations);
+                        }
+                        if (feature.geometry.type == "Polygon") {
+                            L.polyline([[clickCoords.lat, clickCoords.lng],
+                            [objectCoords[0][0][1], objectCoords[0][0][0]]],
+                                lineStyle2).addTo(findLocations);
+                        }
+                    },
+                    style: function () {
+                        return lineStyle1;
+                    }
+                }).addTo(findLocations);
             });
-            return container;
         };
-        myLocationButton.addTo(mapObject);
+
+        // Initialise the FeatureGroup to store editable layers
+        // var drawnItems = new L.FeatureGroup();
+        // mapObject.addLayer(drawnItems);
+
+        // Initialise the draw control and pass it the FeatureGroup of editable layers
+        var drawControl = new L.Control.Draw().addTo(mapObject);
+        
+
+
+        // var myLocationButton = L.control({ position: 'topleft' });
+        // myLocationButton.onAdd = function () {
+        //     var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+        //     var button = L.DomUtil.create('a', '', container);
+        //     button.href = 'javascript:void(0)';
+        //     button.title = 'Tìm trường CNTT&TT';
+        //     button.innerHTML = '<i class="bi bi-cursor"></i>';
+        //     L.DomEvent.on(button, 'click', function () {
+        //         mapObject.setView([10.031014, 105.769094], 17)
+        //     });
+        //     return container;
+        // };
+        // myLocationButton.addTo(mapObject);
 
         //var url = "https://data.vietnam.opendevelopmentmekong.net/geoserver/ODVietnam/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ODVietnam%3A0fe4de63-d3da-4a10-b471-087b85ea28a9&outputFormat=application%2Fjson";
         //$.getJSON(url, function (data) {
