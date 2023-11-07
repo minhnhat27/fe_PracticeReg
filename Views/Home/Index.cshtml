@@ -3,7 +3,15 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div id="map" class="position-fixed" style="width: 100%; max-height: 400px; max-width: 900px; right: 0; bottom: 0"></div>
+<div id="map" class="position-fixed" style="width: 100%; height: 100%; max-height: 450px; max-width: 1010px; right: 0; bottom: 0"></div>
+<div id="text">
+    <b>FeatureCollection</b><br>
+    <textarea id="geojsontext1"></textarea>
+    <input type="button" id="submit1" value="Submit">
+    <br><b>A new feature</b>
+    <textarea id="geojsontext2"></textarea>
+    <input type="button" id="submit2" value="Submit">
+</div>
 
 @section Scripts{
     <script>
@@ -96,7 +104,7 @@
         var myLocation = L.layerGroup().addTo(mapObject);
         var findLocations = L.layerGroup().addTo(mapObject);
 
-        mapObject.on("click", mapClick);
+        // mapObject.on("click", mapClick);
         var control1 = L.control({ position: "topleft" });
         control1.onAdd = map => {
             var div = L.DomUtil.create("div", "div1");
@@ -151,16 +159,98 @@
             });
         };
 
-        // Initialise the FeatureGroup to store editable layers
-        // var drawnItems = new L.FeatureGroup();
-        // mapObject.addLayer(drawnItems);
 
-        // Initialise the draw control and pass it the FeatureGroup of editable layers
-        var drawControl = new L.Control.Draw().addTo(mapObject);
-        
+        var drawnItems = L.featureGroup().addTo(mapObject);
+        var MyCustomMarker = L.Icon.extend({
+            options: {
+                shadowUrl: null,
+                iconAnchor: new L.Point(13, 41),
+                iconSize: [25, 41],
+                iconUrl: 'css/images/marker-icon.png'
+            }
+        });
+
+        var options = {
+            position: 'topleft',			//default 'topleft'
+            draw: {
+                polyline: {
+                    shapeOptions: {
+                        color: '#f357a1',
+                        weight: 2
+                    },
+                    metric: true				//default true là met; false là foot
+                },
+                polygon: {
+                    shapeOptions: {
+                        color: '#bada55'
+                    },
+                    showArea: true,			//default false
+                },
+                rectangle: {
+                    shapeOptions: {
+                        color: 'green',
+                        weight: 2,
+                        fillColor: 'blue',
+                        fillOpacity: 0.2		//độ mờ, default 0.2
+                    }
+                },
+                marker: {
+                    icon: new MyCustomMarker()
+                },
+                circle: true,
+                circlemarker: false, 		// Turns off this drawing tool
+            },
+            edit: {
+                featureGroup: drawnItems, 	//REQUIRED!!
+                edit: true,
+                remove: true,
+            }
+        };
+
+        //giữ đối tượng đang được vẽ
+        // var layer = new L.layer();
+
+        var drawControl = new L.Control.Draw(options).addTo(mapObject);
+        function showText(e) {
+            //drawnItems.clearLayers();
+            var layer = e.layer;
+            layer.addTo(drawnItems);
+            //collection dạng object
+            var collection = drawnItems.toGeoJSON();
+            //null: không hàm xử lý, 2: thụt từng cấp là 2 khoảng trắng
+            var geojson1 = JSON.stringify(collection, null, 2);
+            $("#geojsontext1").val(geojson1);
+            //JSON.stringify chuyển object thành chuỗi JSON
+            var geojson2 = JSON.stringify(layer.toGeoJSON().geometry, null, 2);
+            $("#geojsontext2").val(geojson2);
+        }
+
+        //Khi một đối tượng được vẽ
+        mapObject.on("draw:created", showText);
+
+        $("#submit1").on("click", function () {
+            drawnItems.clearLayers();
+            //JSON.parse chuyển chuỗi JSON thành đối tượng Javascript
+            L.geoJSON(JSON.parse($("#geojsontext1").val())).addTo(drawnItems);
+        });
+
+        //Vẽ từ một feature
+        $("#submit2").on("click", function () {
+            drawnItems.clearLayers();
+            L.geoJSON(JSON.parse($("#geojsontext2").val())).addTo(drawnItems);
+        });
+
+        // var drawing = JSON.stringify(layer.toGeoJSON().geometry), geo = layer.toGeoJSON();
+        // var sql1 = "INSERT INTO DULIEUMAU(The_geom, Name) VALUES (geometry::STGeomFromText('POINT(105.769094 10.031014)', 0), N'Trường CNTT & TT')"
+        // function insertData(){
+        //     $.post({
+        //         url: "https://localhost:44304/api/Map/saveFeature",
+        //         data: { q: sql1}
+        //     })
+        // }
 
 
-        // var myLocationButton = L.control({ position: 'topleft' });
+                // var myLocationButton = L.control({ position: 'topleft' });
         // myLocationButton.onAdd = function () {
         //     var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
         //     var button = L.DomUtil.create('a', '', container);

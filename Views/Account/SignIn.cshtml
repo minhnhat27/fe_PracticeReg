@@ -9,7 +9,7 @@
                         <p class="text-center fs-5">Đăng nhập</p>
                         <form asp-action="SignIn" method="POST">
                             <div class="mb-3">
-                                <label asp-for="MSCB" class="form-label">MSCB</label>
+                                <label asp-for="MSCB" class="form-label">MSCB/Email</label>
                                 <input type="text" asp-for="MSCB" value="@ViewBag.MSCB" class="form-control fs-2" id="MSCB" aria-describedby="emailHelp">
                                 <span asp-validation-for="MSCB" class="text-danger fs-2"></span>
                             </div>

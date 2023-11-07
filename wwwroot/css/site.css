@@ -2,18 +2,6 @@ body, html {
     height: 100%;
     width: 100%;
 }
-#map {
-    height: 100%;
-    width: 100%;
-}
-#combobox {
-    padding: 4px;
-    font: 14px/16px Arial, Helvetica, sans-serif;
-    background-color: rgba(255,255,255,1);
-    box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    border-radius: 5px;
-    width: 50%;
-}
 .item {
     margin: 5px 0;
     width: 70%;
