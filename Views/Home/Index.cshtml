@@ -4,19 +4,11 @@
 }
 
 <div id="map" class="position-fixed" style="width: 100%; height: 100%; max-height: 450px; max-width: 1010px; right: 0; bottom: 0"></div>
-<div id="text">
-    <b>FeatureCollection</b><br>
-    <textarea id="geojsontext1"></textarea>
-    <input type="button" id="submit1" value="Submit">
-    <br><b>A new feature</b>
-    <textarea id="geojsontext2"></textarea>
-    <input type="button" id="submit2" value="Submit">
-</div>
 
 @section Scripts{
     <script>
         var mapObject = L.map("map", { center: [10.031014, 105.769094], zoom: 14, doubleClickZoom: false });
-        L.tileLayer("http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}",
+        L.tileLayer("https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}",
             {
                 attribution: '&copy; <a href="https://www.google.com/help/legalnotices_maps/" target="_blank">GoogleStreetMap</a>'
             }
@@ -27,22 +19,29 @@
         var combobox = L.control({ position: "topleft" });
         combobox.onAdd = function (map) {
             var div = L.DomUtil.create("div", "");
-            div.innerHTML = '<select id="combobox"></select>';
+            div.innerHTML = '<select id="combobox" style="width: 150px;"></select>';
             return div;
         };
         combobox.addTo(mapObject);
 
+        var menu = $("#combobox");
+        menu.append("<option>Chưa có dữ liệu</option>");
+        var lineStyle = { color: "blue", weight: 4 };
+        var polygonStyle = { color: "red", fillColor: "yellow", weight: 4 };
         var urlJSON = "https://localhost:44304/api/Map/Dulieumau";
         var sql = "?q=ALL";
+
         $.getJSON(urlJSON + sql, function (data) {
-            var menu = $("#combobox");
+            menu.empty();
             menu.append("<option data-id='ALL'>Tất cả</option>");
             $.each(data.features, function (key, value) {
-                menu.append("<option data-id=" + value.id + ">" + value.properties.name + "</option>");
+                if (value.properties.name !== null) {
+                    menu.append("<option data-id=" + value.id + ">" + value.properties.name + "</option>");
+                }
+                else {
+                    menu.append("<option data-id=" + value.id + ">Chưa đặt tên</option>");
+                }
             });
-
-            var lineStyle = { color: "blue", weight: 4 };
-            var polygonStyle = { color: "red", fillColor: "yellow", weight: 4 };
             L.geoJSON(data, {
                 style: function (feature) {
                     switch (feature.geometry.type) {
@@ -52,7 +51,10 @@
                 },
                 onEachFeature: function (feature, layer) {
                     if (feature.properties && feature.properties.name) {
-                        layer.bindPopup("<i>" + feature.properties.name + "</i>");
+                        layer.bindPopup("<i id='updateValue'>" + feature.properties.name + "</i><i title='Chỉnh sửa' id='updateBtn' class='mx-1 bi bi-pencil-fill'></i>");
+                    }
+                    if (feature.properties && feature.properties.name === null) {
+                        layer.bindPopup("<i id='updateValue'>Chưa đặt tên</i><i title='Chỉnh sửa' id='updateBtn' class='mx-1 bi bi-pencil-fill'></i>");
                     }
                 }
             }).addTo(layerObject);
@@ -69,8 +71,6 @@
             $.getJSON(urlJSON + sql, function (data) {
                 layerObject.clearLayers();
 
-                var lineStyle = { color: "blue", weight: 4 };
-                var polygonStyle = { color: "red", fillColor: "yellow", weight: 4 };
                 L.geoJSON(data, {
                     style: function (feature) {
                         switch (feature.geometry.type) {
@@ -80,7 +80,10 @@
                     },
                     onEachFeature: function (feature, layer) {
                         if (feature.properties && feature.properties.name) {
-                            layer.bindPopup("<i>" + feature.properties.name + "</i>");
+                            layer.bindPopup("<i id='updateValue'>" + feature.properties.name + "</i><i title='Chỉnh sửa' id='updateBtn' class='mx-1 bi bi-pencil-fill'></i>");
+                        }
+                        if (feature.properties && feature.properties.name === null) {
+                            layer.bindPopup("<i id='updateValue'>Chưa đặt tên</i><i title='Chỉnh sửa' id='updateBtn' class='mx-1 bi bi-pencil-fill'></i>");
                         }
                     }
                 }).addTo(layerObject);
@@ -106,9 +109,9 @@
 
         // mapObject.on("click", mapClick);
         var control1 = L.control({ position: "topleft" });
-        control1.onAdd = map => {
+        control1.onAdd = () => {
             var div = L.DomUtil.create("div", "div1");
-            div.innerHTML = '<input id="textbox1" style="width: 70%" type="number" />'
+            div.innerHTML = '<input id="textbox1" type="number" />'
             return div;
         }
         control1.addTo(mapObject);
@@ -133,7 +136,7 @@
                 L.geoJSON(data, {
                     onEachFeature: function (feature, layer) {
                         layer.bindPopup("<i>" + feature.properties.name + "</i>" +
-                            "<br> Cách điểm chọn là: " + feature.properties.dis_met + " mét");
+                            "<br> Cách điểm chọn là: " + feature.properties.dis_met + " met");
 
                         var objectCoords = feature.geometry.coordinates;
                         if (feature.geometry.type == "Point") {
@@ -171,98 +174,329 @@
         });
 
         var options = {
-            position: 'topleft',			//default 'topleft'
+            position: 'topleft',
             draw: {
                 polyline: {
                     shapeOptions: {
                         color: '#f357a1',
                         weight: 2
                     },
-                    metric: true				//default true là met; false là foot
+                    metric: true
                 },
                 polygon: {
                     shapeOptions: {
                         color: '#bada55'
                     },
-                    showArea: true,			//default false
+                    showArea: true,
                 },
                 rectangle: {
                     shapeOptions: {
                         color: 'green',
                         weight: 2,
                         fillColor: 'blue',
-                        fillOpacity: 0.2		//độ mờ, default 0.2
+                        fillOpacity: 0.2
                     }
                 },
                 marker: {
                     icon: new MyCustomMarker()
                 },
                 circle: true,
-                circlemarker: false, 		// Turns off this drawing tool
+                circlemarker: false,
             },
             edit: {
-                featureGroup: drawnItems, 	//REQUIRED!!
+                featureGroup: drawnItems,
                 edit: true,
                 remove: true,
             }
         };
 
-        //giữ đối tượng đang được vẽ
-        // var layer = new L.layer();
+        var selectedId;
+        var updateItems = L.featureGroup().addTo(mapObject);
+        var selectedLayer = new L.Layer();
 
         var drawControl = new L.Control.Draw(options).addTo(mapObject);
-        function showText(e) {
-            //drawnItems.clearLayers();
-            var layer = e.layer;
+        var layer = new L.Layer();
+
+        var control = L.control({ position: "topright" });
+        control.onAdd = function (map) {
+            var div = L.DomUtil.create("div", "divsave");
+            div.innerHTML = '<input type="button" class="btn btn-primary" id="save" value="Save">';
+            return div;
+        };
+        control.addTo(mapObject);
+
+        mapObject.on("draw:created", function(e){
+            layer = e.layer;
             layer.addTo(drawnItems);
-            //collection dạng object
-            var collection = drawnItems.toGeoJSON();
-            //null: không hàm xử lý, 2: thụt từng cấp là 2 khoảng trắng
-            var geojson1 = JSON.stringify(collection, null, 2);
-            $("#geojsontext1").val(geojson1);
-            //JSON.stringify chuyển object thành chuỗi JSON
-            var geojson2 = JSON.stringify(layer.toGeoJSON().geometry, null, 2);
-            $("#geojsontext2").val(geojson2);
+            var popupContent =
+                '<form>' +
+                'Name:<br><input style="width: fit-content;" type="text" class="mt-2 form-control" id="input_name" value=""><br>' +
+                '<input class="btn btn-secondary" type="button" value="Submit" id="submit">' +
+                '</form>';
+            layer.bindPopup(popupContent).openPopup();
+        });
+        drawnItems.on('popupopen', function (e) {
+            layer = e.layer;
+        });
+        $("body").on("click", "#submit" , addprops);
+
+        $("#save").on("click", function () {
+            if (drawnItems.getLayers().length !== 0) {
+                drawnItems.eachLayer(function (layer) {
+                    var drawing = JSON.stringify(layer.toGeoJSON().geometry), geo = layer.toGeoJSON();
+
+                    $.post({
+                        url: "https://localhost:44304/api/Map/saveFeature",
+                        data: { "q": drawing, "name": geo.properties.name },
+                        success: function () {
+                            showAlert("Lưu thành công!");
+                        },
+                        error: function () {
+                            showAlert("Lưu thất bại, vui lòng thử lại!");
+                        }
+                    });
+                    L.geoJSON(layer.toGeoJSON(), {
+                        onEachFeature: function (feature, layer) {
+                            if (feature.properties && feature.properties.name) {
+                                layer.bindPopup("<i id='updateValue'>" + feature.properties.name + "</i><i title='Chỉnh sửa' id='updateBtn' class='mx-1 bi bi-pencil-fill'></i>");
+                            }
+                            if (feature.properties && feature.properties.name === null) {
+                                layer.bindPopup("<i id='updateValue'>Chưa đặt tên</i><i title='Chỉnh sửa' id='updateBtn' class='mx-1 bi bi-pencil-fill'></i>");
+                            }
+                        }
+                    }).addTo(layerObject);
+                });
+                drawnItems.clearLayers();
+            }
+            if (updateItems.getLayers().length !== 0) {
+                updateItems.eachLayer(function (layer) {
+                    var geo = layer.toGeoJSON();
+
+                    $.ajax({
+                        url: "https://localhost:44304/api/Map/updateFeature",
+                        type: "PUT",
+                        data: { "id": geo.id, "name": geo.properties.name },
+                        success: function () {
+                            showAlert("Cập nhật thành công!");
+                        },
+                        error: function () {
+                            showAlert("Lưu thất bại, vui lòng thử lại!");
+                        }
+                    })
+                    L.geoJSON(layer.toGeoJSON(), {
+                        onEachFeature: function (feature, layer) {
+                            if (feature.properties && feature.properties.name) {
+                                layer.bindPopup("<i id='updateValue'>" + feature.properties.name + "</i><i title='Chỉnh sửa' id='updateBtn' class='mx-1 bi bi-pencil-fill'></i>");
+                            }
+                            if (feature.properties && (feature.properties.name === null || feature.properties.name === '')) {
+                                layer.bindPopup("<i id='updateValue'>Chưa đặt tên</i><i title='Chỉnh sửa' id='updateBtn' class='mx-1 bi bi-pencil-fill'></i>");
+                            }
+                        }
+                    }).addTo(layerObject);
+
+                    layerObject.eachLayer(function (layer) {
+                        layer.on('click', function (e) {
+                            selectedLayer = e.sourceTarget;
+                            selectedId = selectedLayer.feature.id
+                        });
+                    })
+
+                });
+                updateItems.clearLayers();
+            }
+
+        })
+
+        function addprops() {
+            layer.feature = {};
+            layer.feature.type = "Feature";
+            layer.feature.properties = {};
+            layer.feature.properties.name = $("#input_name").val();
+            layer.closePopup();
+
+            var popup = layer.getPopup(),
+                content = popup.getContent(),
+                start = content.indexOf('id="input_name"', 0),
+                end = content.indexOf('>', start),
+                l = content.substr(0, start),
+                r = content.substr(end, content.length);
+            
+            content = l + 'id="input_name" value="' + $("#input_name").val() + '"' + r;
+
+            layer.bindPopup(content).closePopup();
         }
 
-        //Khi một đối tượng được vẽ
-        mapObject.on("draw:created", showText);
+        $("body").on("click", "#submit1", addprops1);
 
-        $("#submit1").on("click", function () {
-            drawnItems.clearLayers();
-            //JSON.parse chuyển chuỗi JSON thành đối tượng Javascript
-            L.geoJSON(JSON.parse($("#geojsontext1").val())).addTo(drawnItems);
+        $(document).ready(function () {
+            layerObject.eachLayer(function (layer) {
+                layer.on('click', function (e) {
+                    selectedLayer = e.sourceTarget;
+                    selectedId = selectedLayer.feature.id
+                });
+            })
+        })
+
+        updateItems.on('popupopen', function (e) {
+            selectedLayer = e.layer;
+            selectedId = selectedLayer.feature.id
         });
 
-        //Vẽ từ một feature
-        $("#submit2").on("click", function () {
-            drawnItems.clearLayers();
-            L.geoJSON(JSON.parse($("#geojsontext2").val())).addTo(drawnItems);
+        $("body").on("click", "#updateBtn", function () {
+            console.log(selectedLayer._popup._source.feature.id)
+            selectedLayer.addTo(updateItems)
+            if (selectedLayer.feature.properties.name === null) {
+                selectedLayer.feature.properties.name = ''
+            }
+            var popupContent =
+                '<form>' +
+                'Name:<br><input style="width: fit-content;" type="text" class="mt-2 form-control" id="input_name" value="' + selectedLayer.feature.properties.name + '"><br>' +
+                '<input class="btn btn-secondary" type="button" value="Submit" id="submit1">' +
+                '</form>';
+            selectedLayer.bindPopup(popupContent).openPopup();
         });
 
-        // var drawing = JSON.stringify(layer.toGeoJSON().geometry), geo = layer.toGeoJSON();
-        // var sql1 = "INSERT INTO DULIEUMAU(The_geom, Name) VALUES (geometry::STGeomFromText('POINT(105.769094 10.031014)', 0), N'Trường CNTT & TT')"
-        // function insertData(){
-        //     $.post({
-        //         url: "https://localhost:44304/api/Map/saveFeature",
-        //         data: { q: sql1}
-        //     })
-        // }
+        function addprops1() {
+            selectedLayer.feature = {};
+            selectedLayer.feature.type = "Feature";
+            selectedLayer.feature.properties = {};
+            selectedLayer.feature.properties.name = $("#input_name").val();
+            selectedLayer.feature.id = selectedId
+            selectedLayer.closePopup();
+
+            var popup = selectedLayer.getPopup(),
+                content = popup.getContent(),
+                start = content.indexOf('id="input_name"', 0),
+                end = content.indexOf('>', start),
+                l = content.substr(0, start),
+                r = content.substr(end, content.length);
+
+            content = l + 'id="input_name" value="' + $("#input_name").val() + '"' + r;
+
+            selectedLayer.bindPopup(content).closePopup();
+        }
+
+        var myLat, myLng
+        navigator.geolocation.getCurrentPosition(function (position) {
+            myLat = position.coords.latitude;
+            myLng = position.coords.longitude;
+        }, function (error) {
+            showAlert("Có lỗi xảy ra. Không thể lấy vị trí của bạn!");
+        });
+
+        var myLocationButton = L.control({ position: 'topleft' });
+        myLocationButton.onAdd = () => {
+            var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+            var button = L.DomUtil.create('a', '', container);
+            button.href = 'javascript:void(0)';
+            button.title = 'Vị trí của tôi';
+            button.innerHTML = '<i class="bi bi-cursor"></i>';
+
+            L.DomEvent.on(button, 'click', function () {
+                MyCustomMarker = L.Icon.extend({
+                    options: {
+                        shadowUrl: null,
+                        iconSize: [40, 40],
+                        iconUrl: 'css/images/current-location-icon.png'
+                    }
+                });
+                var marker = L.marker([myLat, myLng], { icon: new MyCustomMarker() }).addTo(mapObject);
+                mapObject.setView([myLat, myLng], 18);
+                marker.on("click", marker.bindPopup("Vị trí hiện tại"))
+            });
+            return container;
+        };
+        myLocationButton.addTo(mapObject);
 
 
-                // var myLocationButton = L.control({ position: 'topleft' });
-        // myLocationButton.onAdd = function () {
-        //     var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-        //     var button = L.DomUtil.create('a', '', container);
-        //     button.href = 'javascript:void(0)';
-        //     button.title = 'Tìm trường CNTT&TT';
-        //     button.innerHTML = '<i class="bi bi-cursor"></i>';
-        //     L.DomEvent.on(button, 'click', function () {
-        //         mapObject.setView([10.031014, 105.769094], 17)
-        //     });
-        //     return container;
-        // };
-        // myLocationButton.addTo(mapObject);
+        function debounce(func, delay) {
+            let timeout;
+
+            return function executedFunc(...args) {
+                if (timeout) {
+                    clearTimeout(timeout);
+                }
+
+                timeout = setTimeout(() => {
+                    func(...args);
+                    timeout = null;
+                }, delay);
+            };
+        }
+
+        var searchControl = L.control({ position: 'topright' });
+        searchControl.onAdd = () => {
+            var div = L.DomUtil.create("div");
+            div.innerHTML = '<input id="textSearch" type="text" />'
+            return div;
+        }
+        searchControl.addTo(mapObject);
+
+        var searchResult = L.control({ position: 'topright' });
+        searchResult.onAdd = () => {
+            var div = L.DomUtil.create("div");
+            div.innerHTML = "<div id='searchResult' style='width: 150px; height: fit-content; background-color: white; overflow: auto;'></div>"
+            
+            return div;
+        }
+        searchResult.addTo(mapObject);
+
+        var selectedDirection
+
+        $("#textSearch").on("keyup", debounce(() => {
+            $("#searchResult").empty()
+            $("#searchResult").append("<table class='m-0 table table-bordered searchTable'></table>")
+            var value = $("#textSearch").val()
+
+            $(".searchTable").children().empty()
+            $.getJSON("https://localhost:44304/api/Map/searchFeature?name=" + value, function (data) {
+                L.geoJSON(data, {
+                    onEachFeature: function (feature) {
+                        if (feature.geometry.type === "Polygon") {
+                            $(".searchTable").append("<tr><td>" + feature.properties.name + "</td><td><i id='btnDirection' data-lat='" + feature.geometry.coordinates[0][0][1] + "' data-lng='" + feature.geometry.coordinates[0][0][0] + "' title='Chỉ đường' class='bi bi-cursor'></i></td></tr>")
+                        }
+                        if (feature.geometry.type === "LineString") {
+                            $(".searchTable").append("<tr><td>" + feature.properties.name + "</td><td><i id='btnDirection' data-lat='" + feature.geometry.coordinates[0][1] + "' data-lng='" + feature.geometry.coordinates[0][0] + "' title='Chỉ đường' class='bi bi-cursor'></i></td></tr>")
+                        }
+                        if (feature.geometry.type === "Point") {
+                            $(".searchTable").append("<tr><td>" + feature.properties.name + "</td><td><i id='btnDirection' data-lat='" + feature.geometry.coordinates[1] + "' data-lng='" + feature.geometry.coordinates[0] + "' title='Chỉ đường' class='bi bi-cursor'></i></td></tr>")
+                        }
+                    }
+                })
+                if(data.features.length === 0){
+                    $("#searchResult").empty()
+                }
+            })
+        }, 500));
+
+        var routingControl;
+
+        $("body").on("click", "#btnDirection", function () {
+            var lat = $(this).data("lat")
+            var lng = $(this).data("lng")
+            direction(lat, lng)
+        })
+
+        function direction(lat, lng) {
+            if (routingControl) {
+                routingControl.remove()
+            }
+
+            var start = L.latLng(myLat, myLng);
+            var end = L.latLng(lat, lng);
+            routingControl = L.Routing.control({
+                waypoints: [
+                    start,
+                    end
+                ],
+                language: 'en',
+                createMarker: function () { return null; },
+                draggableWaypoints: false,
+                fitSelectedRoutes: true,
+                addWaypoints: false,
+                collapsible: true
+            }).addTo(mapObject);
+        }
 
         //var url = "https://data.vietnam.opendevelopmentmekong.net/geoserver/ODVietnam/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ODVietnam%3A0fe4de63-d3da-4a10-b471-087b85ea28a9&outputFormat=application%2Fjson";
         //$.getJSON(url, function (data) {
